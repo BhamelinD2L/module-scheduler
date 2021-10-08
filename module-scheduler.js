@@ -25,7 +25,7 @@ class ModuleScheduler extends LocalizeMixin(LitElement) {
 
 	render() {
 		return html`
-			<h2>${this.localize('pageTitle')}</h2>
+			<h2>${this.localize('PageTitle')}</h2>
 		`;
 	}
 
