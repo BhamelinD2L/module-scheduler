@@ -5,9 +5,6 @@ class ModuleScheduler extends LocalizeMixin(LitElement) {
 
 	static get properties() {
 		return {
-			orgUnitId: {
-				type: String
-			}
 		};
 	}
 
