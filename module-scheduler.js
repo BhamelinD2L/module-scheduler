@@ -19,10 +19,6 @@ class ModuleScheduler extends LocalizeMixin(LitElement) {
 		`;
 	}
 
-	constructor() {
-		super();
-	}
-
 	render() {
 		return html`
 			<h2>${this.localize('PageTitle')}</h2>
