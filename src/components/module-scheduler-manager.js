@@ -93,16 +93,16 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	}
 
 	_renderSchedule(schedule) {
-		const lastDateApplied = schedule.LastRunDate ? getDateFromISODateTime(schedule.LastRunDate).toLocaleString() : null;
+		const lastDateApplied = schedule.lastRunDate ? getDateFromISODateTime(schedule.lastRunDate).toLocaleString() : null;
 		return html`
 			<tr>
 				<td>
-					${schedule.ScheduleName}
+					${schedule.scheduleName}
 					${this._renderContextMenu()}
 				</td>
-				<td>${schedule.CourseOfferingSemesterId}</td>
-				<td>${schedule.CourseOfferingSessionCodeFilter}</td>
-				<td>${schedule.CourseOfferingSubjectCodeFilter}</td>
+				<td>${schedule.courseOfferingSemesterId}</td>
+				<td>${schedule.courseOfferingSessionCodeFilter}</td>
+				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
 				<td>${lastDateApplied}</td>
 			</tr>
 		`;
