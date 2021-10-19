@@ -1,4 +1,5 @@
-import { css, html, LitElement } from 'lit-element';
+import './src/components/module-scheduler-manager.js';
+import { css, html, LitElement } from 'lit-element/lit-element';
 import { LocalizeMixin } from './src/mixins/localize-mixin.js';
 
 class ModuleScheduler extends LocalizeMixin(LitElement) {
@@ -21,7 +22,7 @@ class ModuleScheduler extends LocalizeMixin(LitElement) {
 
 	render() {
 		return html`
-			<h2>${this.localize('PageTitle')}</h2>
+			<module-scheduler-manager></module-scheduler-manager>
 		`;
 	}
 
