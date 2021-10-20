@@ -5,6 +5,10 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
+	static async getSemesters() {
+		return await this._get(Routes.Semesters());
+	}
+
 	// Helper Methods
 
 	static get _xsrfToken() {

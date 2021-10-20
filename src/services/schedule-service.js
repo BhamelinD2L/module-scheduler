@@ -5,4 +5,10 @@ export class ScheduleService {
 		const allSchedules = await Requests.getAllSchedules();
 		return allSchedules;
 	}
+
+	static async getSemesters() {
+		const semester = await Requests.getSemesters();
+		return semester;
+	}
+
 }

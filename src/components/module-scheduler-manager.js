@@ -21,6 +21,10 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			},
 			allSchedules: {
 				type: Array
+			},
+			_allSemesters: {
+				type: Object,
+				attribute: false
 			}
 		};
 	}
@@ -54,21 +58,22 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isLoading = true;
 		this.isQuerying = false;
 		this.allSchedules = [];
+		this._allSemesters = {};
 	}
 
 	async connectedCallback() {
 		super.connectedCallback();
 
 		this.isLoading = true;
-		await this._queryAllSchedules();
+		await Promise.all([this._queryAllSchedules(), this._queryAllSemesters()]);
 		this.isLoading = false;
 	}
 
 	render() {
 		return html`
-			<h2>${ this.localize('pageTitle') }</h2>
-			<p>${ this.localize('pageDescription') }</p>
-			${ this.isLoading ? this._renderSpinner() : this._renderTable() }
+			<h2>${this.localize('page:title')}</h2>
+			<p>${this.localize('page:description')}</p>
+			${this.isLoading ? this._renderSpinner() : this._renderTable()}
 		`;
 	}
 
@@ -78,14 +83,23 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isQuerying = false;
 	}
 
+	async _queryAllSemesters() {
+		return await this.scheduleService.getSemesters()
+			.then(semester => this._allSemesters = semester.Items);
+	}
+
+	_querySemester(semesterId) {
+		return this._allSemesters.find(semester => semester.OrgUnit.Id === semesterId).OrgUnit.Name;
+	}
+
 	_renderContextMenu() {
 		return html`
 			<d2l-dropdown-context-menu>
-				<d2l-dropdown-menu>
+				<d2l-dropdown-menu label=${this.localize('contextMenu:label')}>
 					<d2l-menu>
-						<d2l-menu-item text="${this.localize('editMenu')}"></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('viewIgnoreListMenu')}"></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('applyNowMenu')}"></d2l-menu-item>
+						<d2l-menu-item text="${this.localize('contextMenu:edit')}"></d2l-menu-item>
+						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
+						<d2l-menu-item text="${this.localize('contextMenu:applyNow')}"></d2l-menu-item>
 					</d2l-menu>
 				</d2l-dropdown-menu>
 			</d2l-dropdown-context-menu>
@@ -93,6 +107,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	}
 
 	_renderSchedule(schedule) {
+		const semesterName = this._querySemester(schedule.courseOfferingSemesterId);
 		const lastDateApplied = schedule.lastRunDate ? getDateFromISODateTime(schedule.lastRunDate).toLocaleString() : null;
 		return html`
 			<tr>
@@ -100,7 +115,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 					${schedule.scheduleName}
 					${this._renderContextMenu()}
 				</td>
-				<td>${schedule.courseOfferingSemesterId}</td>
+				<td>${semesterName}</td>
 				<td>${schedule.courseOfferingSessionCodeFilter}</td>
 				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
 				<td>${lastDateApplied}</td>
@@ -122,11 +137,11 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			<d2l-table-wrapper sticky-headers>
 				<table class="d2l-table">
 					<thead>
-						<th>${this.localize('scheduleNameTableHeader')}</th>
-						<th>${this.localize('semesterTableHeader')}</th>
-						<th>${this.localize('sessionTableHeader')}</th>
-						<th>${this.localize('subjectTableHeader')}</th>
-						<th>${this.localize('lastDateAppliedTableHeader')}</th>
+						<th>${this.localize('tableHeader:scheduleName')}</th>
+						<th>${this.localize('tableHeader:semester')}</th>
+						<th>${this.localize('tableHeader:session')}</th>
+						<th>${this.localize('tableHeader:subject')}</th>
+						<th>${this.localize('tableHeader:lastDateApplied')}</th>
 					</thead>
 					<tbody>
 						${ this.isQuerying ? '' : this.allSchedules.map(schedule => this._renderSchedule(schedule)) }
