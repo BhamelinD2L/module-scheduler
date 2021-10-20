@@ -21,10 +21,6 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			},
 			allSchedules: {
 				type: Array
-			},
-			_allSemesters: {
-				type: Object,
-				attribute: false
 			}
 		};
 	}
@@ -58,14 +54,13 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isLoading = true;
 		this.isQuerying = false;
 		this.allSchedules = [];
-		this._allSemesters = {};
 	}
 
 	async connectedCallback() {
 		super.connectedCallback();
 
 		this.isLoading = true;
-		await Promise.all([this._queryAllSchedules(), this._queryAllSemesters()]);
+		await this._queryAllSchedules();
 		this.isLoading = false;
 	}
 
@@ -83,15 +78,6 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isQuerying = false;
 	}
 
-	async _queryAllSemesters() {
-		return await this.scheduleService.getSemesters()
-			.then(semester => this._allSemesters = semester.Items);
-	}
-
-	_querySemester(semesterId) {
-		return this._allSemesters.find(semester => semester.OrgUnit.Id === semesterId).OrgUnit.Name;
-	}
-
 	_renderContextMenu() {
 		return html`
 			<d2l-dropdown-context-menu>
@@ -107,7 +93,6 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	}
 
 	_renderSchedule(schedule) {
-		const semesterName = this._querySemester(schedule.courseOfferingSemesterId);
 		const lastDateApplied = schedule.lastRunDate ? getDateFromISODateTime(schedule.lastRunDate).toLocaleString() : null;
 		return html`
 			<tr>
@@ -115,7 +100,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 					${schedule.scheduleName}
 					${this._renderContextMenu()}
 				</td>
-				<td>${semesterName}</td>
+				<td>${schedule.courseOfferingSemesterId}</td>
 				<td>${schedule.courseOfferingSessionCodeFilter}</td>
 				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
 				<td>${lastDateApplied}</td>
