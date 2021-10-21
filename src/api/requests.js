@@ -5,6 +5,11 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
+	static async runSchedule(scheduleId) {
+		await this._post(Routes.RunSchedule(scheduleId));
+		return;
+	}
+
 	// Helper Methods
 
 	static get _xsrfToken() {

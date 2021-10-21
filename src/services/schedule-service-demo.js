@@ -2,7 +2,7 @@ export class ScheduleServiceDemo {
 
 	static schedules = [
 		{
-			scheduleId: 1,
+			scheduleId: '1',
 			scheduleName: 'Math',
 			courseOfferingSemesterId: '10101',
 			courseOfferingSessionCodeFilter: 'S100',
@@ -14,7 +14,7 @@ export class ScheduleServiceDemo {
 			lastRunDate: '2021-07-01T19:57:39.290Z'
 		},
 		{
-			scheduleId: 2,
+			scheduleId: '2',
 			scheduleName: 'English',
 			courseOfferingSemesterId: '10007',
 			courseOfferingSessionCodeFilter: 'S100',
@@ -23,10 +23,15 @@ export class ScheduleServiceDemo {
 			scheduleJson: '',
 			createdByUserId: 1,
 			createdDate: '2021-06-01T19:57:39.290Z',
-			lastRunDate: '2021-07-01T19:57:39.290Z'		}
+			lastRunDate: null
+		}
 	];
 
 	static async getAllSchedules() {
 		return this.schedules;
+	}
+
+	static async runSchedule() {
+		return;
 	}
 }

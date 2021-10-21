@@ -5,4 +5,9 @@ export class ScheduleService {
 		const allSchedules = await Requests.getAllSchedules();
 		return allSchedules;
 	}
+
+	static async runSchedule(scheduleId) {
+		await Requests.runSchedule(scheduleId);
+		return;
+	}
 }

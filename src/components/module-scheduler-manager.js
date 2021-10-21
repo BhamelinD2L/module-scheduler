@@ -26,6 +26,9 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			},
 			openDialog: {
 				type: Boolean
+			},
+			_scheduleId: {
+				type: String
 			}
 		};
 	}
@@ -60,6 +63,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isQuerying = false;
 		this.allSchedules = [];
 		this.openDialog = false;
+		this._scheduleId = '';
 	}
 
 	async connectedCallback() {
@@ -72,10 +76,32 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 
 	render() {
 		return html`
-			<h2>${ this.localize('page:title') }</h2>
-			<p>${ this.localize('page:description') }</p>
-			${ this.isLoading ? this._renderSpinner() : this._renderTable() }
+			<h2>${this.localize('page:title')}</h2>
+			<p>${this.localize('page:description')}</p>
+			${this.isLoading ? this._renderSpinner() : this._renderTable()}
 		`;
+	}
+
+	async _handleApplyNow() {
+		const schedule = this.allSchedules.find(schedule => schedule.scheduleId === this._scheduleId);
+
+		await this.scheduleService.runSchedule(this._scheduleId);
+
+		schedule.lastRunDate = this.localize('status:processing');
+
+		this.requestUpdate();
+
+		this.openDialog = false;
+	}
+
+	_handleWarningDialogClose() {
+		this.dispatchEvent(new CustomEvent('close'));
+		this.openDialog = false;
+	}
+
+	_handleWarningDialogOpen(event) {
+		this.openDialog = true;
+		this._scheduleId = event.target.getAttribute('schedule-id');
 	}
 
 	async _queryAllSchedules() {
@@ -84,18 +110,15 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isQuerying = false;
 	}
 
-	_handleWarningDialogOpen() {
-		this.openDialog = true;
-	}
-
-	_renderContextMenu() {
+	_renderContextMenu(scheduleId) {
 		return html`
 			<d2l-dropdown-context-menu>
-				<d2l-dropdown-menu label=${this.localize('contextMenu:label')}>
+				<d2l-dropdown-menu>
 					<d2l-menu label="${this.localize('contextMenu:label')}">
 						<d2l-menu-item text="${this.localize('contextMenu:edit')}"></d2l-menu-item>
 						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
 						<d2l-menu-item
+							schedule-id="${ scheduleId }"
 							text="${this.localize('contextMenu:applyNow')}"
 							@d2l-menu-item-select=${this._handleWarningDialogOpen}
 						>
@@ -103,17 +126,21 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 					</d2l-menu>
 				</d2l-dropdown-menu>
 			</d2l-dropdown-context-menu>
-			${this._renderWarningDialog()}
 		`;
 	}
 
 	_renderSchedule(schedule) {
-		const lastDateApplied = schedule.lastRunDate ? getDateFromISODateTime(schedule.lastRunDate).toLocaleString() : null;
+		const lastDateApplied = schedule.lastRunDate
+			? (schedule.lastRunDate === this.localize('status:processing')
+				? schedule.lastRunDate
+				: getDateFromISODateTime(schedule.lastRunDate).toLocaleString())
+			: null;
+
 		return html`
 			<tr>
 				<td>
 					${schedule.scheduleName}
-					${this._renderContextMenu()}
+					${this._renderContextMenu(schedule.scheduleId)}
 				</td>
 				<td>${schedule.courseOfferingSemesterId}</td>
 				<td>${schedule.courseOfferingSessionCodeFilter}</td>
@@ -147,17 +174,21 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 						${ this.isQuerying ? '' : this.allSchedules.map(schedule => this._renderSchedule(schedule)) }
 					</tbody>
 				</table>
+
+			${this._renderWarningDialog()}
 		`;
 	}
 
 	_renderWarningDialog() {
+		//TODO: Update courseCount
 		return html`
 			<d2l-dialog
+		        title-text="${this.localize('warningDialog:title')}"
 				?opened=${this.openDialog}
 				@d2l-dialog-close=${this._handleWarningDialogClose}
 			>
-                <div>
-					${this.localize('warningDialog:content', {courseCount: 10})}
+				<div>
+					<p>${this.localize('warningDialog:content', { courseCount:10 })}<p>
 				</div>
 				<d2l-button slot="footer" primary @click=${this._handleApplyNow}>
 					${this.localize('button:yes')}
@@ -169,13 +200,6 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		`;
 	}
 
-	_handleWarningDialogClose() {
-		this.dispatchEvent(new CustomEvent('close'));
-	}
-
-	_handleApplyNow() {
-		console.log("Apply Now");
-	}
 }
 customElements.define('module-scheduler-manager', ModuleSchedulerManager);
 
