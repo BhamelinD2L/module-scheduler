@@ -1,3 +1,5 @@
+import '@brightspace-ui/core/components/button/button.js';
+import '@brightspace-ui/core/components/dialog/dialog.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-context-menu.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
@@ -21,6 +23,9 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			},
 			allSchedules: {
 				type: Array
+			},
+			openDialog: {
+				type: Boolean
 			}
 		};
 	}
@@ -54,6 +59,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isLoading = true;
 		this.isQuerying = false;
 		this.allSchedules = [];
+		this.openDialog = false;
 	}
 
 	async connectedCallback() {
@@ -66,8 +72,8 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 
 	render() {
 		return html`
-			<h2>${ this.localize('pageTitle') }</h2>
-			<p>${ this.localize('pageDescription') }</p>
+			<h2>${ this.localize('page:title') }</h2>
+			<p>${ this.localize('page:description') }</p>
 			${ this.isLoading ? this._renderSpinner() : this._renderTable() }
 		`;
 	}
@@ -78,17 +84,26 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isQuerying = false;
 	}
 
+	_handleWarningDialogOpen() {
+		this.openDialog = true;
+	}
+
 	_renderContextMenu() {
 		return html`
 			<d2l-dropdown-context-menu>
 				<d2l-dropdown-menu>
-					<d2l-menu>
-						<d2l-menu-item text="${this.localize('editMenu')}"></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('viewIgnoreListMenu')}"></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('applyNowMenu')}"></d2l-menu-item>
+					<d2l-menu label="${this.localize('contextMenu:label')}">
+						<d2l-menu-item text="${this.localize('contextMenu:edit')}"></d2l-menu-item>
+						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
+						<d2l-menu-item
+							text="${this.localize('contextMenu:applyNow')}"
+							@d2l-menu-item-select=${this._handleWarningDialogOpen}
+						>
+						</d2l-menu-item>
 					</d2l-menu>
 				</d2l-dropdown-menu>
 			</d2l-dropdown-context-menu>
+			${this._renderWarningDialog()}
 		`;
 	}
 
@@ -122,11 +137,11 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			<d2l-table-wrapper sticky-headers>
 				<table class="d2l-table">
 					<thead>
-						<th>${this.localize('scheduleNameTableHeader')}</th>
-						<th>${this.localize('semesterTableHeader')}</th>
-						<th>${this.localize('sessionTableHeader')}</th>
-						<th>${this.localize('subjectTableHeader')}</th>
-						<th>${this.localize('lastDateAppliedTableHeader')}</th>
+						<th>${this.localize('tableHeader:scheduleName')}</th>
+						<th>${this.localize('tableHeader:semester')}</th>
+						<th>${this.localize('tableHeader:session')}</th>
+						<th>${this.localize('tableHeader:subject')}</th>
+						<th>${this.localize('tableHeader:lastDateApplied')}</th>
 					</thead>
 					<tbody>
 						${ this.isQuerying ? '' : this.allSchedules.map(schedule => this._renderSchedule(schedule)) }
@@ -135,5 +150,32 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		`;
 	}
 
+	_renderWarningDialog() {
+		return html`
+			<d2l-dialog
+				?opened=${this.openDialog}
+				@d2l-dialog-close=${this._handleWarningDialogClose}
+			>
+                <div>
+					${this.localize('warningDialog:content', {courseCount: 10})}
+				</div>
+				<d2l-button slot="footer" primary @click=${this._handleApplyNow}>
+					${this.localize('button:yes')}
+				</d2l-button>
+				<d2l-button slot="footer" data-dialog-action>
+					${this.localize('button:no')}
+				</d2l-button>
+			</d2l-dialog>
+		`;
+	}
+
+	_handleWarningDialogClose() {
+		this.dispatchEvent(new CustomEvent('close'));
+	}
+
+	_handleApplyNow() {
+		console.log("Apply Now");
+	}
 }
 customElements.define('module-scheduler-manager', ModuleSchedulerManager);
+
