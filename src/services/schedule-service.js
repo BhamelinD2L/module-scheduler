@@ -8,6 +8,5 @@ export class ScheduleService {
 
 	static async runSchedule(scheduleId) {
 		await Requests.runSchedule(scheduleId);
-		return;
 	}
 }

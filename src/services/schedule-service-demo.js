@@ -32,6 +32,5 @@ export class ScheduleServiceDemo {
 	}
 
 	static async runSchedule() {
-		return;
 	}
 }

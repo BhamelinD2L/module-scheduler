@@ -7,7 +7,6 @@ export class Requests {
 
 	static async runSchedule(scheduleId) {
 		await this._post(Routes.RunSchedule(scheduleId));
-		return;
 	}
 
 	// Helper Methods
