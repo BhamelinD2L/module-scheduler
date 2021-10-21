@@ -66,9 +66,9 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 
 	render() {
 		return html`
-			<h2>${ this.localize('pageTitle') }</h2>
-			<p>${ this.localize('pageDescription') }</p>
-			${ this.isLoading ? this._renderSpinner() : this._renderTable() }
+			<h2>${this.localize('page:title')}</h2>
+			<p>${this.localize('page:description')}</p>
+			${this.isLoading ? this._renderSpinner() : this._renderTable()}
 		`;
 	}
 
@@ -81,11 +81,11 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	_renderContextMenu() {
 		return html`
 			<d2l-dropdown-context-menu>
-				<d2l-dropdown-menu>
+				<d2l-dropdown-menu label=${this.localize('contextMenu:label')}>
 					<d2l-menu>
-						<d2l-menu-item text="${this.localize('editMenu')}"></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('viewIgnoreListMenu')}"></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('applyNowMenu')}"></d2l-menu-item>
+						<d2l-menu-item text="${this.localize('contextMenu:edit')}"></d2l-menu-item>
+						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
+						<d2l-menu-item text="${this.localize('contextMenu:applyNow')}"></d2l-menu-item>
 					</d2l-menu>
 				</d2l-dropdown-menu>
 			</d2l-dropdown-context-menu>
@@ -122,11 +122,11 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			<d2l-table-wrapper sticky-headers>
 				<table class="d2l-table">
 					<thead>
-						<th>${this.localize('scheduleNameTableHeader')}</th>
-						<th>${this.localize('semesterTableHeader')}</th>
-						<th>${this.localize('sessionTableHeader')}</th>
-						<th>${this.localize('subjectTableHeader')}</th>
-						<th>${this.localize('lastDateAppliedTableHeader')}</th>
+						<th>${this.localize('tableHeader:scheduleName')}</th>
+						<th>${this.localize('tableHeader:semester')}</th>
+						<th>${this.localize('tableHeader:session')}</th>
+						<th>${this.localize('tableHeader:subject')}</th>
+						<th>${this.localize('tableHeader:lastDateApplied')}</th>
 					</thead>
 					<tbody>
 						${ this.isQuerying ? '' : this.allSchedules.map(schedule => this._renderSchedule(schedule)) }
