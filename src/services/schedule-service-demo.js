@@ -4,7 +4,7 @@ export class ScheduleServiceDemo {
 		{
 			scheduleId: 1,
 			scheduleName: 'Math',
-			courseOfferingSemesterId: 100,
+			courseOfferingSemesterId: '10101',
 			courseOfferingSessionCodeFilter: 'S100',
 			courseOfferingSubjectCodeFilter: 'Math101',
 			moduleNameIgnoreList: 'Eng',
@@ -16,7 +16,7 @@ export class ScheduleServiceDemo {
 		{
 			scheduleId: 2,
 			scheduleName: 'English',
-			courseOfferingSemesterId: 100,
+			courseOfferingSemesterId: '10007',
 			courseOfferingSessionCodeFilter: 'S100',
 			courseOfferingSubjectCodeFilter: 'Eng101',
 			moduleNameIgnoreList: 'Math',

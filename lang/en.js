@@ -4,7 +4,7 @@ export default {
 	"page:title": "Module Scheduler",
 	"page:description": "Creating a module schedule will allow you to define a semester, session, and subject and one or more delivery blocks that will be used to assign dates to modules. Applying a schedule will apply the delivery block dates to any courses that match the module schedule's details.",
 	"tableHeader:scheduleName": "Schedule Name",
-	"tableHeader:semesterTableHeader": "Semester",
+	"tableHeader:semester": "Semester",
 	"tableHeader:session": "Session",
 	"tableHeader:subject": "Subject",
 	"tableHeader:lastDateApplied": "Last Date Applied",

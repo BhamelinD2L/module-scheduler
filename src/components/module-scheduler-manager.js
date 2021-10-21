@@ -91,7 +91,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	_renderContextMenu() {
 		return html`
 			<d2l-dropdown-context-menu>
-				<d2l-dropdown-menu>
+				<d2l-dropdown-menu label=${this.localize('contextMenu:label')}>
 					<d2l-menu label="${this.localize('contextMenu:label')}">
 						<d2l-menu-item text="${this.localize('contextMenu:edit')}"></d2l-menu-item>
 						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
