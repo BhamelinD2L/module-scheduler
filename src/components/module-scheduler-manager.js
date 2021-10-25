@@ -130,11 +130,11 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	}
 
 	_renderSchedule(schedule) {
-		const lastDateApplied = schedule.lastRunDate
-			? (schedule.lastRunDate === this.localize('status:processing')
-				? schedule.lastRunDate
-				: getDateFromISODateTime(schedule.lastRunDate).toLocaleString())
-			: null;
+		let lastDateApplied = schedule.lastRunDate || (schedule.lastRunDate?.this.localize('status:processing'));
+
+		if (schedule.lastRunDate !== null && (schedule.lastRunDate !== this.localize('status:processing'))) {
+			lastDateApplied = getDateFromISODateTime(schedule.lastRunDate).toLocaleString();
+		}
 
 		return html`
 			<tr>

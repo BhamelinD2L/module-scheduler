@@ -26,6 +26,19 @@ export class ScheduleServiceDemo {
 			createdByUserId: 1,
 			createdDate: '2021-06-01T19:57:39.290Z',
 			lastRunDate: null
+		},
+		{
+			scheduleId: '3',
+			scheduleName: 'Math',
+			courseOfferingSemesterId: '10001',
+			courseOfferingSemesterName: 'Winter',
+			courseOfferingSessionCodeFilter: 'S100',
+			courseOfferingSubjectCodeFilter: 'Math101',
+			moduleNameIgnoreList: 'Eng',
+			scheduleJson: '',
+			createdByUserId: 1,
+			createdDate: '2021-06-01T19:57:39.290Z',
+			lastRunDate: 'Processing'
 		}
 	];
 
