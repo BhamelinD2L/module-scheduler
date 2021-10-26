@@ -180,7 +180,6 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	}
 
 	_renderWarningDialog() {
-		//TODO: Update courseCount
 		return html`
 			<d2l-dialog
 		        title-text="${this.localize('warningDialog:title')}"
@@ -188,7 +187,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 				@d2l-dialog-close=${this._handleWarningDialogClose}
 			>
 				<div>
-					<p>${this.localize('warningDialog:content', { courseCount:10 })}<p>
+					<p>${this.localize('warningDialog:content')}<p>
 				</div>
 				<d2l-button slot="footer" primary @click=${this._handleApplyNow}>
 					${this.localize('button:yes')}

@@ -13,7 +13,7 @@ export default {
 	"contextMenu:viewIgnoreList": "View Ignore List",
 	"contextMenu:applyNow": "Apply Now",
 	"warningDialog:title": "Confirmation",
-	"warningDialog:content": "This will apply dates to {courseCount} courses. Are you sure you want to proceed?",
+	"warningDialog:content": "Applying this module schedule may affect many course offerings. Are you sure you want to proceed?",
 	"button:yes": "Yes",
 	"button:no": "No",
 	"status:processing": "Processing"
