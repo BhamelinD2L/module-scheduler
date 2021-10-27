@@ -9,7 +9,7 @@ import { ScheduleServiceFactory } from '../services/schedule-service-factory.js'
 import { selectStyles } from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 const DIALOG_ID = 'd2l-schedule-dialog';
-const JSON_PLACEHOLDER = '{\n\t{\n\t\tStartDate="MM/DD/YYYY" (required)\n\t\tDueDate="MM/DD/YYYY" (optional)\n\t\tEndDate="MM/DD/YYYY" (optional)\n\t}\n}';
+const JSON_PLACEHOLDER = '[\n\t{\n\t\t\'StartDate\': \'MM/DD/YYYY\',\n\t\t\'DueDate\': \'MM/DD/YYYY\',\n\t\t\'EndDate\': \'MM/DD/YYYY\'\n\t}\n]';
 
 class ScheduleDialog extends LocalizeMixin(LitElement) {
 	static get properties() {
@@ -268,7 +268,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			courseOfferingSessionCodeFilter: this.sessionCode,
 			courseOfferingSubjectCodeFilter: this.subjectCode,
 			moduleNameIgnoreList: this.moduleIgnoreList,
-			scheduleJson: this.scheduleJson,
+			scheduleJson: `{ 'DeliveryBlocks': ${this.scheduleJson} }`
 		};
 		if (!this.scheduleId) {
 			await this.scheduleService.createSchedule(schedule);
