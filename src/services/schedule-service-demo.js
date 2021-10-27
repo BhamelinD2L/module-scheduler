@@ -42,10 +42,37 @@ export class ScheduleServiceDemo {
 		}
 	];
 
+	static semesters = [
+		{
+			'Identifier': '10001',
+			'Name': 'Fall'
+		},
+		{
+			'Identifier': '10007',
+			'Name': 'Winter'
+		},
+		{
+			'Identifier': '10101',
+			'Name': 'Spring'
+		}
+	]
+
+	static async createSchedule() {}
+
 	static async getAllSchedules() {
 		return this.schedules;
 	}
 
-	static async runSchedule() {
+	static async getSchedule(scheduleId) {
+		const schedule = this.schedules.find(x => x.scheduleId === scheduleId);
+		return (schedule || this.schedules[0]);
 	}
+
+	static async getSemesters() {
+		return this.semesters;
+	}
+
+	static async runSchedule() {}
+
+	static async updateSchedule() {}
 }

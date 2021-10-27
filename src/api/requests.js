@@ -5,6 +5,23 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
+	static async getSchedule(scheduleId) {
+		return await this._get(Routes.Schedule(scheduleId));
+	}
+
+	static async getSemesters() {
+		const semesterOrgUnitType = await this._get(Routes.SemesterOrgUnitType());
+		return await this._get(Routes.Semesters(semesterOrgUnitType.Id));
+	}
+
+	static async postSchedule(schedule) {
+		return await this._post(Routes.SaveNewSchedule(), JSON.stringify(schedule));
+	}
+
+	static async putSchedule(scheduleId, schedule) {
+		return await this._put(Routes.Schedule(scheduleId), schedule);
+	}
+
 	static async runSchedule(scheduleId) {
 		await this._post(Routes.RunSchedule(scheduleId));
 	}
