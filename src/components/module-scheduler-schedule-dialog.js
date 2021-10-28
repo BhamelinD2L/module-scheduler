@@ -279,7 +279,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				await this.scheduleService.updateSchedule(this.scheduleId, schedule);
 			}
 			this.closeDialog(SAVE_ACTION);
-		} catch {
+		} catch (err) {
 			// TODO: handle errors
 		} finally {
 			this.saving = false; // Always re-enable save button to try again
