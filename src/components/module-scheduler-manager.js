@@ -4,6 +4,7 @@ import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-context-menu.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/overflow-group/overflow-group.js';
+import './module-scheduler-schedule-dialog.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { AppRoutes } from '../helpers/app-routes.js';
 import { BaseMixin } from '../mixins/base-mixin.js';
@@ -26,6 +27,9 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 			allSchedules: {
 				type: Array
 			},
+			showScheduleDialog: {
+				type: Boolean
+			},
 			openDialog: {
 				type: Boolean
 			},
@@ -43,14 +47,18 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				:host {
 					display: inline-block;
 				}
-
 				:host([hidden]) {
 					display: none;
 				}
-
+				.d2l-page-description {
+					margin: 0;
+				}
 				.d2l-spinner {
 					display: flex;
 					margin: 48px;
+				}
+				.d2l-add-new-btn {
+					margin: 5px 0;
 				}
 			`
 		];
@@ -64,6 +72,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.isLoading = true;
 		this.isQuerying = false;
 		this.allSchedules = [];
+		this.showScheduleDialog = false;
 		this.openDialog = false;
 		this._scheduleId = '';
 	}
@@ -78,10 +87,21 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	render() {
 		return html`
-			<h2>${this.localize('page:title')}</h2>
-			<p>${this.localize('page:description')}</p>
-			${this.isLoading ? this._renderSpinner() : this._renderTable()}
+			${ this.showScheduleDialog ? this._renderAddEditScheduleDialog() : null }
+			<h2>${ this.localize('page:title') }</h2>
+			<p class="d2l-page-description">${ this.localize('page:description') }</p>
+			<d2l-button-subtle
+				class="d2l-add-new-btn"
+				@click="${this._openScheduleDialog}"
+				icon="tier1:plus-large-thick"
+				text=${ this.localize('page:addNewButton') }>
+			</d2l-button-subtle>
+			${ this.isLoading ? this._renderSpinner() : this._renderTable() }
 		`;
+	}
+
+	_closeScheduleDialog() {
+		this.showScheduleDialog = false;
 	}
 
 	async _handleApplyNow() {
@@ -112,10 +132,24 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._scheduleId = event.target.getAttribute('schedule-id');
 	}
 
+	_openScheduleDialog() {
+		this.showScheduleDialog = true;
+	}
+
 	async _queryAllSchedules() {
 		this.isQuerying = true;
 		this.allSchedules = await this.scheduleService.getAllSchedules();
 		this.isQuerying = false;
+	}
+
+	_renderAddEditScheduleDialog(scheduleId = null) {
+		return html`
+			<module-scheduler-schedule-dialog
+				scheduleId=${scheduleId}
+				@schedule-dialog-closed=${this._closeScheduleDialog}>
+				>
+			</module-scheduler-schedule-dialog>
+		`;
 	}
 
 	_renderContextMenu(scheduleId) {
@@ -193,7 +227,6 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	_renderWarningDialog() {
-		//TODO: Update courseCount
 		return html`
 			<d2l-dialog
 		        title-text="${this.localize('warningDialog:title')}"
@@ -201,7 +234,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				@d2l-dialog-close=${this._handleWarningDialogClose}
 			>
 				<div>
-					<p>${this.localize('warningDialog:content', { courseCount:10 })}<p>
+					<p>${this.localize('warningDialog:content')}<p>
 				</div>
 				<d2l-button slot="footer" primary @click=${this._handleApplyNow}>
 					${this.localize('button:yes')}
