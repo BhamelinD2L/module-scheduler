@@ -16,5 +16,9 @@ export default {
 	"warningDialog:content": "This will apply dates to {courseCount} courses. Are you sure you want to proceed?",
 	"button:yes": "Yes",
 	"button:no": "No",
-	"status:processing": "Processing"
+	"status:processing": "Processing",
+	"ignoreList:title": "Ignore List for {scheduleName}",
+	"ignoreList:courseOfferingName": "Course Offering Name",
+	"ignoreList:courseOfferingCode": "Course Offering Code",
+	"ignoreList:completionStatus": "Completion Status"
 };

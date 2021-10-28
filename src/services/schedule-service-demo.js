@@ -46,6 +46,9 @@ export class ScheduleServiceDemo {
 		return this.schedules;
 	}
 
+	static async getIgnoreList() {
+	}
+
 	static async runSchedule() {
 	}
 }

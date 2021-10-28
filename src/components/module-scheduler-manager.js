@@ -5,13 +5,15 @@ import '@brightspace-ui/core/components/dropdown/dropdown-context-menu.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/overflow-group/overflow-group.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
+import { AppRoutes } from '../helpers/app-routes.js';
+import { BaseMixin } from '../mixins/base-mixin.js';
 import { getDateFromISODateTime } from '@brightspace-ui/core/helpers/dateTime.js';
 import { heading1Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { LocalizeMixin } from '../mixins/localize-mixin.js';
 import { ScheduleServiceFactory } from '../services/schedule-service-factory.js';
 import { tableStyles } from '@brightspace-ui/core/components/table/table-wrapper.js';
 
-class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
+class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	static get properties() {
 		return {
@@ -94,6 +96,12 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.openDialog = false;
 	}
 
+	_handleIgnoreListSelect(event) {
+		const scheduleId = event.target.getAttribute('schedule-id');
+		const schedule = this.allSchedules.find(schedule => schedule.scheduleId === scheduleId);
+		this.navigateTo(AppRoutes.IgnoreList(scheduleId), { schedule });
+	}
+
 	_handleWarningDialogClose() {
 		this.dispatchEvent(new CustomEvent('close'));
 		this.openDialog = false;
@@ -116,7 +124,12 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 				<d2l-dropdown-menu>
 					<d2l-menu label="${this.localize('contextMenu:label')}">
 						<d2l-menu-item text="${this.localize('contextMenu:edit')}"></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
+						<d2l-menu-item
+							schedule-id="${ scheduleId }"
+							text="${this.localize('contextMenu:viewIgnoreList')}"
+							@d2l-menu-item-select=${this._handleIgnoreListSelect}
+						>
+						</d2l-menu-item>
 						<d2l-menu-item
 							schedule-id="${ scheduleId }"
 							text="${this.localize('contextMenu:applyNow')}"
