@@ -271,20 +271,19 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			scheduleJson: this.scheduleJson
 		};
 
-		let savePromise = !this.scheduleId
-			? this.scheduleService.createSchedule(schedule)
-			: this.scheduleService.updateSchedule(this.scheduleId, schedule);
-
-		savePromise
-			.then(() => {
-				this.closeDialog(SAVE_ACTION);
-			})
-			.catch(() => {
-				// TODO: handle errors
-			})
-			.finally(() => {
-				this.saving = false; // Always re-enable save button to try again
-			});
+		try {
+			if (!this.schedule) {
+				await this.scheduleService.createSchedule(schedule)
+			}
+			else {
+				await this.scheduleService.updateSchedule(this.scheduleId, schedule);
+			}
+			this.closeDialog(SAVE_ACTION);
+		} catch {
+			// TODO: handle errors
+		} finally {
+			this.saving = false; // Always re-enable save button to try again
+		}
 	}
 
 	_handleModuleIgnoreListChange(e) {
