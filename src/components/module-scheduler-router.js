@@ -43,7 +43,7 @@ class ModuleSchedulerRouter extends LocalizeMixin(LitElement) {
 				`;
 			}
 			case AppRoutes.IgnoreList(): {
-				const scheduleName = this.pageData.schedule ? this.pageData.schedule.scheduleName : '';
+				const scheduleName = this.pageData.scheduleName ? this.pageData.scheduleName : '';
 				const scheduleId = this.params.scheduleId;
 
 				return html`

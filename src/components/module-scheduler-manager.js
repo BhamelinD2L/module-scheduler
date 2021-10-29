@@ -120,7 +120,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 	_handleIgnoreListSelect(event) {
 		const scheduleId = event.target.getAttribute('schedule-id');
 		const schedule = this.allSchedules.find(schedule => schedule.scheduleId === scheduleId);
-		this.navigateTo(AppRoutes.IgnoreList(scheduleId), { schedule });
+		this.navigateTo(AppRoutes.IgnoreList(scheduleId), { scheduleName: schedule.scheduleName });
 	}
 
 	_handleWarningDialogClose() {

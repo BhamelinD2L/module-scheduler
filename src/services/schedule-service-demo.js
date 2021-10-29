@@ -9,7 +9,7 @@ export class ScheduleServiceDemo {
 			'lastDateApplied': '2021-07-01T19:57:39.290Z',
 			'lastCompletionStatusId': '2'
 		}
-	]
+	];
 
 	static schedules = [
 		{
@@ -66,7 +66,7 @@ export class ScheduleServiceDemo {
 			'Identifier': '10101',
 			'Name': 'Spring'
 		}
-	]
+	];
 
 	static async createSchedule() {}
 

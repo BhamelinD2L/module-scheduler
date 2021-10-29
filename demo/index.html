@@ -5,6 +5,7 @@
 		<script type="module">
 			import '@brightspace-ui/core/components/demo/demo-page.js';
 			import '../src/components/module-scheduler-manager.js';
+			import '../src/components/module-scheduler-ignore-list.js';
 		</script>
 		<title>ModuleScheduler</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +16,14 @@
 	</script>
 	<body>
 		<d2l-demo-page page-title="ModuleScheduler">
-			<h2>ModuleScheduler</h2>
+			<h2>Module Scheduler Manager</h2>
 			<d2l-demo-snippet>
 				<module-scheduler-manager></module-scheduler-manager>
+			</d2l-demo-snippet>
+
+			<h2>Moduler Scheduler Ignore List</h2>
+			<d2l-demo-snippet>
+				<module-scheduler-ignore-list scheduleId="1" scheduleName="Math"></module-scheduler-ignore-list>
 			</d2l-demo-snippet>
 		</d2l-demo-page>
 	</body>
