@@ -169,7 +169,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		});
 	}
 
-	async isValidForm() {
+	isValidForm() {
 		// front-end validation here
 		return true;
 	}
@@ -256,11 +256,11 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	}
 
 	async saveForm() {
-		this.saving = true;
-		if (!(await this.isValidForm())) {
-			this.saving = false;
+		if (!this.isValidForm()) {
 			return;
 		}
+
+		this.saving = true;
 
 		const schedule = {
 			scheduleName: this.scheduleName,
@@ -268,15 +268,22 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			courseOfferingSessionCodeFilter: this.sessionCode,
 			courseOfferingSubjectCodeFilter: this.subjectCode,
 			moduleNameIgnoreList: this.moduleIgnoreList,
-			scheduleJson: `{ 'DeliveryBlocks': ${this.scheduleJson} }`
+			scheduleJson: this.scheduleJson
 		};
-		if (!this.scheduleId) {
-			await this.scheduleService.createSchedule(schedule);
-		} else {
-			await this.scheduleService.updateSchedule(this.scheduleId, schedule);
+
+		try {
+			if (!this.schedule) {
+				await this.scheduleService.createSchedule(schedule);
+			}
+			else {
+				await this.scheduleService.updateSchedule(this.scheduleId, schedule);
+			}
+			this.closeDialog(SAVE_ACTION);
+		} catch (err) {
+			// TODO: handle errors
+		} finally {
+			this.saving = false; // Always re-enable save button to try again
 		}
-		this.closeDialog(SAVE_ACTION);
-		this.saving = false;
 	}
 
 	_handleModuleIgnoreListChange(e) {

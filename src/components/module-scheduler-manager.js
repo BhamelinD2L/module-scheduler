@@ -77,10 +77,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 
 	async connectedCallback() {
 		super.connectedCallback();
-
-		this.isLoading = true;
-		await this._queryAllSchedules();
-		this.isLoading = false;
+		await this._loadSchedules();
 	}
 
 	render() {
@@ -98,8 +95,9 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		`;
 	}
 
-	_closeScheduleDialog() {
+	async _closeScheduleDialog() {
 		this.showScheduleDialog = false;
+		await this._loadSchedules();
 	}
 
 	async _handleApplyNow() {
@@ -122,6 +120,12 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	_handleWarningDialogOpen(event) {
 		this.openDialog = true;
 		this._scheduleId = event.target.getAttribute('schedule-id');
+	}
+
+	async _loadSchedules() {
+		this.isLoading = true;
+		await this._queryAllSchedules();
+		this.isLoading = false;
 	}
 
 	_openScheduleDialog() {
