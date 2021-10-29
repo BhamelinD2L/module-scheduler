@@ -6,6 +6,7 @@ import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/overflow-group/overflow-group.js';
 import './module-scheduler-schedule-dialog.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
+import { ifDefined } from 'lit-html/directives/if-defined';
 import { getDateFromISODateTime } from '@brightspace-ui/core/helpers/dateTime.js';
 import { heading1Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { LocalizeMixin } from '../mixins/localize-mixin.js';
@@ -72,7 +73,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.allSchedules = [];
 		this.showScheduleDialog = false;
 		this.openDialog = false;
-		this._scheduleId = '';
+		this._scheduleId = null;
 	}
 
 	async connectedCallback() {
@@ -112,6 +113,11 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.openDialog = false;
 	}
 
+	_handleEditSchedule(event) {
+		this._scheduleId = event.target.getAttribute('schedule-id');
+		this.showScheduleDialog = true;
+	}
+
 	_handleWarningDialogClose() {
 		this.dispatchEvent(new CustomEvent('close'));
 		this.openDialog = false;
@@ -129,6 +135,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	}
 
 	_openScheduleDialog() {
+		this._scheduleId = null;
 		this.showScheduleDialog = true;
 	}
 
@@ -138,10 +145,10 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 		this.isQuerying = false;
 	}
 
-	_renderAddEditScheduleDialog(scheduleId = null) {
+	_renderAddEditScheduleDialog() {
 		return html`
 			<module-scheduler-schedule-dialog
-				scheduleId=${scheduleId}
+				scheduleId=${ifDefined(this._scheduleId || undefined)}
 				@schedule-dialog-closed=${this._closeScheduleDialog}>
 				>
 			</module-scheduler-schedule-dialog>
@@ -153,7 +160,10 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 			<d2l-dropdown-context-menu>
 				<d2l-dropdown-menu>
 					<d2l-menu label="${this.localize('contextMenu:label')}">
-						<d2l-menu-item text="${this.localize('contextMenu:edit')}"></d2l-menu-item>
+						<d2l-menu-item
+							schedule-id="${ scheduleId }"
+							text="${this.localize('contextMenu:edit')}"
+							@d2l-menu-item-select=${this._handleEditSchedule}></d2l-menu-item>
 						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
 						<d2l-menu-item
 							schedule-id="${ scheduleId }"

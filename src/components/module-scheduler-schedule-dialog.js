@@ -15,7 +15,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	static get properties() {
 		return {
 			scheduleId: {
-				type: Number
+				type: String
 			},
 			scheduleName: {
 				type: String
@@ -24,7 +24,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				type: Object
 			},
 			semesterId: {
-				type: Number
+				type: String
 			},
 			sessionCode: {
 				type: String
@@ -33,7 +33,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				type: String
 			},
 			moduleIgnoreList: {
-				type: Array
+				type: String
 			},
 			semesters: {
 				type: Array
@@ -81,10 +81,11 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		super.connectedCallback();
 
 		this.semesters = await this.scheduleService.getSemesters();
-		this.semesterId = this.semesters[0]?.Identifier;
 
 		if (this.scheduleId) {
-			this.fetchSchedule();
+			await this.fetchSchedule();
+		} else {
+			this.semesterId = this.semesters[0]?.Identifier;
 		}
 	}
 
@@ -95,7 +96,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		await new Promise((r) => setTimeout(r, 0));
 		this._readyToShowDialog = true;
 
-		this.shadowRoot.getElementById('scheduleName').focus();
+		this.shadowRoot.getElementById('scheduleName').focus(); // NOTE: This doesn't seem to be working consistently
 	}
 
 	render() {
@@ -126,6 +127,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 
 	updated(changedProperties) {
 		if (changedProperties.has('scheduleId')) {
+			this.clearForm();
 			this.fetchSchedule();
 		}
 	}
@@ -136,11 +138,11 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 
 	clearForm() {
 		this.scheduleName = '';
-		this.scheduleJson = '';
+		this.scheduleJson = JSON_PLACEHOLDER; // Should this be JSON_PLACEHOLDER?
 		this.semesterId = null;
 		this.sessionCode = '';
 		this.subjectCode = '';
-		this.moduleIgnoreList = [];
+		this.moduleIgnoreList = '';
 	}
 
 	async closeDialog(type) {
@@ -155,30 +157,26 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		this.dispatchEvent(closeDialog);
 	}
 
-	fetchSchedule() {
+	async fetchSchedule() {
 		if (!this.scheduleId) {
 			return;
 		}
-		this.scheduleService.getSchedule(this.scheduleId).then(body => {
+		await this.scheduleService.getSchedule(this.scheduleId).then(body => {
 			this.scheduleName = body.scheduleName;
 			this.scheduleJson = body.scheduleJson;
-			this.semesterId = body.courseOfferingSemesterId;
+			this.semesterId = String(body.courseOfferingSemesterId);
 			this.sessionCode = body.courseOfferingSessionCodeFilter;
 			this.subjectCode = body.courseOfferingSubjectCodeFilter;
-			this.moduleIgnoreList = body.moduleNameIgnoreList;
+			this.moduleIgnoreList = body.moduleNameIgnoreList.join();
 		});
 	}
 
 	isValidForm() {
-		// front-end validation here
+		// TODO: front-end validation here
 		return true;
 	}
 
 	renderForm() {
-		if (this.scheduleId && !(this.scheduleName || this.semesterId || this.moduleIgnoreList)) {
-			return html`<d2l-loading-spinner size="100"></d2l-loading-spinner>`;
-		}
-
 		return html`
 			<label for="scheduleName" class="d2l-label-text">${this.localize('scheduleDialog:name')}</label>
 			<d2l-input-text
@@ -267,7 +265,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			courseOfferingSemesterId: this.semesterId,
 			courseOfferingSessionCodeFilter: this.sessionCode,
 			courseOfferingSubjectCodeFilter: this.subjectCode,
-			moduleNameIgnoreList: this.moduleIgnoreList,
+			moduleNameIgnoreList: this.moduleIgnoreList.split(','),
 			scheduleJson: this.scheduleJson
 		};
 
