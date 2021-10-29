@@ -30,6 +30,7 @@ class ModuleSchedulerRouter extends LocalizeMixin(LitElement) {
 		super();
 		this.page = AppRoutes.Home();
 		this.pageData = null;
+		this.params = null;
 
 		this.initializeRouter();
 	}
@@ -42,7 +43,7 @@ class ModuleSchedulerRouter extends LocalizeMixin(LitElement) {
 				`;
 			}
 			case AppRoutes.IgnoreList(): {
-				const scheduleName = this.pageData.schedule ? this.pageData.schedule.scheduleName : null;
+				const scheduleName = this.pageData.schedule ? this.pageData.schedule.scheduleName : '';
 				const scheduleId = this.params.scheduleId;
 
 				return html`

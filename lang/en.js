@@ -29,7 +29,7 @@ export default {
 	"button:no": "No",
 	"status:processing": "Processing",
 	"ignoreList:title": "Ignore List for {scheduleName}",
-	"ignoreList:courseOffersingName": "Course Offering Name",
+	"ignoreList:courseOfferingName": "Course Offering Name",
 	"ignoreList:courseOfferingCode": "Course Offering Code",
 	"ignoreList:completionStatus": "Completion Status"
 };

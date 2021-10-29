@@ -1,11 +1,11 @@
 const completionStatusIdConverter = Object.freeze({
-	codes: {
+	Ids: {
 		'1': 'Queued',
 		'2': 'Completed',
 		'3': 'Failed'
 	},
-	convertIdText: function(code) {
-		return this.codes[code];
+	convertIdToText: function(Id) {
+		return this.Ids[Id];
 	}
 });
 

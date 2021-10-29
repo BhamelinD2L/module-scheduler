@@ -11,6 +11,7 @@ import { BaseMixin } from '../mixins/base-mixin.js';
 import { getDateFromISODateTime } from '@brightspace-ui/core/helpers/dateTime.js';
 import { heading1Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { LocalizeMixin } from '../mixins/localize-mixin.js';
+import { renderSpinner } from '../helpers/spinner.js';
 import { ScheduleServiceFactory } from '../services/schedule-service-factory.js';
 import { tableStyles } from '@brightspace-ui/core/components/table/table-wrapper.js';
 
@@ -96,7 +97,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				icon="tier1:plus-large-thick"
 				text=${ this.localize('page:addNewButton') }>
 			</d2l-button-subtle>
-			${ this.isLoading ? this._renderSpinner() : this._renderTable() }
+			${ this.isLoading ? renderSpinner() : this._renderTable() }
 		`;
 	}
 
@@ -194,15 +195,6 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
 				<td>${lastDateApplied}</td>
 			</tr>
-		`;
-	}
-
-	_renderSpinner() {
-		return html`
-			<d2l-loading-spinner
-				class="d2l-spinner"
-				size=100>
-			</d2l-loading-spinner>
 		`;
 	}
 

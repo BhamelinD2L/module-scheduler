@@ -1,5 +1,16 @@
 export class ScheduleServiceDemo {
 
+	static ignoreListItems = [
+		{
+			'scheduleId': '1',
+			'courseOfferingId': '1010',
+			'courseOfferingName': 'Math 1',
+			'courseOfferingCode': 'MATH_100_S001_SP22',
+			'lastDateApplied': '2021-07-01T19:57:39.290Z',
+			'lastCompletionStatusId': '2'
+		}
+	]
+
 	static schedules = [
 		{
 			scheduleId: '1',
@@ -63,7 +74,9 @@ export class ScheduleServiceDemo {
 		return this.schedules;
 	}
 
-	static async getIgnoreList() {}
+	static async getIgnoreList() {
+		return this.ignoreListItems;
+	}
 
 	static async getSchedule(scheduleId) {
 		const schedule = this.schedules.find(x => x.scheduleId === scheduleId);

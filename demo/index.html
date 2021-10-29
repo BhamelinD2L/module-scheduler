@@ -4,18 +4,20 @@
 		<link rel="stylesheet" href="/node_modules/@brightspace-ui/core/components/demo/styles.css" type="text/css">
 		<script type="module">
 			import '@brightspace-ui/core/components/demo/demo-page.js';
-			import '../module-scheduler.js';
-			window.demo = true;
+			import '../src/components/module-scheduler-manager.js';
 		</script>
 		<title>ModuleScheduler</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta charset="UTF-8">
 	</head>
+	<script>
+		window.demo = true;
+	</script>
 	<body>
 		<d2l-demo-page page-title="ModuleScheduler">
 			<h2>ModuleScheduler</h2>
 			<d2l-demo-snippet>
-				<d2l-module-scheduler></d2l-module-scheduler>
+				<module-scheduler-manager></module-scheduler-manager>
 			</d2l-demo-snippet>
 		</d2l-demo-page>
 	</body>

@@ -1,9 +1,9 @@
 const puppeteer = require('puppeteer');
 const VisualDiff = require('@brightspace-ui/visual-diff');
 
-describe('d2l-module-scheduler', () => {
+describe('module-scheduler-manager', () => {
 
-	const visualDiff = new VisualDiff('module-scheduler', __dirname);
+	const visualDiff = new VisualDiff('module-scheduler-manager', __dirname);
 
 	let browser, page;
 
