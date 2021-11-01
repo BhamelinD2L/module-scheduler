@@ -30,6 +30,8 @@ export class ScheduleServiceDemo {
 		}
 	];
 
+	static async runSchedule() {}
+
 	static schedules = [
 		{
 			scheduleId: '1',
@@ -86,8 +88,6 @@ export class ScheduleServiceDemo {
 			'Name': 'Spring'
 		}
 	];
-
-	static async runSchedule() {}
 
 	static async updateSchedule() {}
 }
