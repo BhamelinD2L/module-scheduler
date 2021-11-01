@@ -1,5 +1,22 @@
 export class ScheduleServiceDemo {
 
+	static async createSchedule() {}
+
+	static async getAllSchedules() {
+		return this.schedules;
+	}
+
+	static async getSchedule(scheduleId) {
+		const schedule = this.schedules.find(x => x.scheduleId === scheduleId);
+		return (schedule || this.schedules[0]);
+	}
+
+	static async getSemesters() {
+		return this.semesters;
+	}
+
+	static async runSchedule() {}
+
 	static schedules = [
 		{
 			scheduleId: '1',
@@ -56,23 +73,6 @@ export class ScheduleServiceDemo {
 			'Name': 'Spring'
 		}
 	];
-
-	static async createSchedule() {}
-
-	static async getAllSchedules() {
-		return this.schedules;
-	}
-
-	static async getSchedule(scheduleId) {
-		const schedule = this.schedules.find(x => x.scheduleId === scheduleId);
-		return (schedule || this.schedules[0]);
-	}
-
-	static async getSemesters() {
-		return this.semesters;
-	}
-
-	static async runSchedule() {}
 
 	static async updateSchedule() {}
 }
