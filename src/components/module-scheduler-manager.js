@@ -6,14 +6,17 @@ import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/overflow-group/overflow-group.js';
 import './module-scheduler-schedule-dialog.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
+import { AppRoutes } from '../helpers/app-routes.js';
+import { BaseMixin } from '../mixins/base-mixin.js';
 import { getDateFromISODateTime } from '@brightspace-ui/core/helpers/dateTime.js';
 import { heading1Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { ifDefined } from 'lit-html/directives/if-defined';
 import { LocalizeMixin } from '../mixins/localize-mixin.js';
+import { renderSpinner } from '../helpers/spinner.js';
 import { ScheduleServiceFactory } from '../services/schedule-service-factory.js';
 import { tableStyles } from '@brightspace-ui/core/components/table/table-wrapper.js';
 
-class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
+class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	static get properties() {
 		return {
@@ -92,7 +95,7 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 				icon="tier1:plus-large-thick"
 				text=${ this.localize('page:addNewButton') }>
 			</d2l-button-subtle>
-			${ this.isLoading ? this._renderSpinner() : this._renderTable() }
+			${ this.isLoading ? renderSpinner() : this._renderTable() }
 		`;
 	}
 
@@ -116,6 +119,12 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 	_handleEditSchedule(event) {
 		this._scheduleId = event.target.getAttribute('schedule-id');
 		this.showScheduleDialog = true;
+	}
+
+	_handleIgnoreListSelect(event) {
+		const scheduleId = event.target.getAttribute('schedule-id');
+		const schedule = this.allSchedules.find(schedule => schedule.scheduleId === scheduleId);
+		this.navigateTo(AppRoutes.IgnoreList(scheduleId), { scheduleName: schedule.scheduleName });
 	}
 
 	_handleWarningDialogClose() {
@@ -163,8 +172,15 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 						<d2l-menu-item
 							schedule-id="${ scheduleId }"
 							text="${this.localize('contextMenu:edit')}"
-							@d2l-menu-item-select=${this._handleEditSchedule}></d2l-menu-item>
-						<d2l-menu-item text="${this.localize('contextMenu:viewIgnoreList')}"></d2l-menu-item>
+							@d2l-menu-item-select=${this._handleEditSchedule}
+						>
+						</d2l-menu-item>
+						<d2l-menu-item
+							schedule-id="${ scheduleId }"
+							text="${this.localize('contextMenu:viewIgnoreList')}"
+							@d2l-menu-item-select=${this._handleIgnoreListSelect}
+						>
+						</d2l-menu-item>
 						<d2l-menu-item
 							schedule-id="${ scheduleId }"
 							text="${this.localize('contextMenu:applyNow')}"
@@ -195,15 +211,6 @@ class ModuleSchedulerManager extends LocalizeMixin(LitElement) {
 				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
 				<td>${lastDateApplied}</td>
 			</tr>
-		`;
-	}
-
-	_renderSpinner() {
-		return html`
-			<d2l-loading-spinner
-				class="d2l-spinner"
-				size=100>
-			</d2l-loading-spinner>
 		`;
 	}
 

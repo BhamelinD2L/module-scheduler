@@ -11,6 +11,11 @@ export class ScheduleService {
 		return allSchedules;
 	}
 
+	static async getIgnoreList(scheduleId) {
+		const ignoreList = await Requests.getIgnoreList(scheduleId);
+		return ignoreList;
+	}
+
 	static async getSchedule(scheduleId) {
 		const schedule = await Requests.getSchedule(scheduleId);
 		return schedule;

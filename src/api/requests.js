@@ -5,6 +5,10 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
+	static async getIgnoreList(scheduleId) {
+		return await this._get(Routes.IgnoreList(scheduleId));
+	}
+
 	static async getSchedule(scheduleId) {
 		return await this._get(Routes.Schedule(scheduleId));
 	}
