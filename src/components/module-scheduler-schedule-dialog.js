@@ -96,7 +96,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		await new Promise((r) => setTimeout(r, 0));
 		this._readyToShowDialog = true;
 
-		this.shadowRoot.getElementById('scheduleName').focus(); // NOTE: This doesn't seem to be working consistently
+		this.shadowRoot.getElementById('scheduleName').focus();
 	}
 
 	render() {
