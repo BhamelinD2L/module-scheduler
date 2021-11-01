@@ -138,7 +138,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 
 	clearForm() {
 		this.scheduleName = '';
-		this.scheduleJson = JSON_PLACEHOLDER; // Should this be JSON_PLACEHOLDER?
+		this.scheduleJson = JSON_PLACEHOLDER;
 		this.semesterId = null;
 		this.sessionCode = '';
 		this.subjectCode = '';
