@@ -55,7 +55,7 @@ export class ScheduleServiceDemo {
 			'Identifier': '10101',
 			'Name': 'Spring'
 		}
-	]
+	];
 
 	static async createSchedule() {}
 
