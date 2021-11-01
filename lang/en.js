@@ -27,5 +27,9 @@ export default {
 	"warningDialog:content": "Applying this module schedule may affect many course offerings. Are you sure you want to proceed?",
 	"button:yes": "Yes",
 	"button:no": "No",
-	"status:processing": "Processing"
+	"status:processing": "Processing",
+	"ignoreList:title": "Ignore List for {scheduleName}",
+	"ignoreList:courseOfferingName": "Course Offering Name",
+	"ignoreList:courseOfferingCode": "Course Offering Code",
+	"ignoreList:completionStatus": "Completion Status"
 };

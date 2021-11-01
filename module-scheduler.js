@@ -1,4 +1,4 @@
-import './src/components/module-scheduler-manager.js';
+import './src/components/module-scheduler-router.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { LocalizeMixin } from './src/mixins/localize-mixin.js';
 
@@ -22,7 +22,7 @@ class ModuleScheduler extends LocalizeMixin(LitElement) {
 
 	render() {
 		return html`
-			<module-scheduler-manager></module-scheduler-manager>
+			<module-scheduler-router></module-scheduler-router>
 		`;
 	}
 
