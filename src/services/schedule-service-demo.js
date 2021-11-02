@@ -70,6 +70,8 @@ export class ScheduleServiceDemo {
 
 	static async createSchedule() {}
 
+	static async deleteSchedule() {}
+
 	static async getAllSchedules() {
 		return this.schedules;
 	}

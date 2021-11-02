@@ -1,6 +1,11 @@
 import { Routes } from './routes.js';
 
 export class Requests {
+
+	static async deleteSchedule(scheduleId) {
+		await this._delete(Routes.DeleteSchedule(scheduleId));
+	}
+
 	static async getAllSchedules() {
 		return await this._get(Routes.AllSchedules());
 	}
