@@ -122,7 +122,6 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		await this.scheduleService.deleteSchedule(this._scheduleId);
 
 		this.requestUpdate();
-
 		this.openDialog = false;
 	}
 
