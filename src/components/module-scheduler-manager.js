@@ -116,6 +116,16 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.openDialog = false;
 	}
 
+	async _handleDelete() {
+		const schedule = this.allSchedules.find(schedule => schedule.scheduleId === this._scheduleId);
+
+		await this.scheduleService.deleteSchedule(this._scheduleId);
+
+		this.requestUpdate();
+
+		this.openDialog = false;
+	}
+
 	_handleEditSchedule(event) {
 		this._scheduleId = event.target.getAttribute('schedule-id');
 		this.showScheduleDialog = true;
@@ -132,7 +142,17 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.openDialog = false;
 	}
 
+	_handleDeleteWarningDialogClose() {
+		this.dispatchEvent(new CustomEvent('close'));
+		this.openDialog = false;
+	}
+
 	_handleWarningDialogOpen(event) {
+		this.openDialog = true;
+		this._scheduleId = event.target.getAttribute('schedule-id');
+	}
+
+	_handleDeleteWarningDialogOpen(event) {
 		this.openDialog = true;
 		this._scheduleId = event.target.getAttribute('schedule-id');
 	}
@@ -187,6 +207,12 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 							@d2l-menu-item-select=${this._handleWarningDialogOpen}
 						>
 						</d2l-menu-item>
+						<d2l-menu-item
+							schedule-id="${ scheduleId }"
+							text="${this.localize('contextMenu:delete')}"
+							@d2l-menu-item-select=${this._handleDeleteWarningDialogOpen}
+						>
+						</d2l-menu-item>
 					</d2l-menu>
 				</d2l-dropdown-menu>
 			</d2l-dropdown-context-menu>
@@ -231,6 +257,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				</table>
 
 			${this._renderWarningDialog()}
+			${this._renderDeleteWarningDialog()}
 		`;
 	}
 
@@ -249,6 +276,26 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				</d2l-button>
 				<d2l-button slot="footer" data-dialog-action>
 					${this.localize('button:no')}
+				</d2l-button>
+			</d2l-dialog>
+		`;
+	}
+
+	_renderDeleteWarningDialog() {
+		return html`
+			<d2l-dialog
+		        title-text="${this.localize('warningDialog:title')}"
+				?opened=${this.openDialog}
+				@d2l-dialog-close=${this._handleDeleteWarningDialogClose}
+			>
+				<div>
+					<p>${this.localize('deleteDialog:content')}<p>
+				</div>
+				<d2l-button slot="footer" primary @click=${this._handleDelete}>
+					${this.localize('button:delete')}
+				</d2l-button>
+				<d2l-button slot="footer" data-dialog-action>
+					${this.localize('button:cancel')}
 				</d2l-button>
 			</d2l-dialog>
 		`;

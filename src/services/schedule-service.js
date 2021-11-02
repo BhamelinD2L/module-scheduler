@@ -34,4 +34,8 @@ export class ScheduleService {
 		await Requests.putSchedule(scheduleId, schedule);
 		return;
 	}
+
+	static async deleteSchedule(scheduleId) {
+		await Requests.deleteSchedule(scheduleId);
+	}
 }

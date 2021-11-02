@@ -30,6 +30,10 @@ export class Requests {
 		await this._post(Routes.RunSchedule(scheduleId));
 	}
 
+	static async runSchedule(scheduleId) {
+		await this._delete(Routes.DeleteSchedule(scheduleId));
+	}
+
 	// Helper Methods
 
 	static get _xsrfToken() {

@@ -90,4 +90,6 @@ export class ScheduleServiceDemo {
 	static async runSchedule() {}
 
 	static async updateSchedule() {}
+
+	static async deleteSchedule() {}
 }

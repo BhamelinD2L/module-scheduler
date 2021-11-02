@@ -11,4 +11,5 @@ export class Routes {
 	static SemesterOrgUnitType() { return `${D2L_BASE}/outypes/semester`; }
 	static Semesters(orgUnitTypeId) { return `${D2L_BASE}/orgstructure/?orgUnitType=${orgUnitTypeId}`; }
 	static UpdateSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/update`; }
+	static DeleteSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/delete`; }
 }
