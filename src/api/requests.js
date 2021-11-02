@@ -82,4 +82,9 @@ export class Requests {
 		options.body = body;
 		return this._fetch(url, options);
 	}
+
+	static _delete(url) {
+		const options = this._options('DELETE');
+		return this._fetch(url, options);
+	}
 }
