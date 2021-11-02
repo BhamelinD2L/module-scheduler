@@ -44,6 +44,11 @@ export class Requests {
 			D2L.LP.Web.Authentication.Xsrf.GetXsrfToken() || '';
 	}
 
+	static _delete(url) {
+		const options = this._options('DELETE');
+		return this._fetch(url, options);
+	}
+
 	static async _fetch(url, options) {
 		return await fetch(url, options)
 			.then(response => {
