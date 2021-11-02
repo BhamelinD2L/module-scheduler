@@ -32,7 +32,10 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 			showScheduleDialog: {
 				type: Boolean
 			},
-			openDialog: {
+			openApplyNowDialog: {
+				type: Boolean
+			},
+			openDeleteDialog: {
 				type: Boolean
 			},
 			_scheduleId: {
@@ -75,7 +78,8 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.isQuerying = false;
 		this.allSchedules = [];
 		this.showScheduleDialog = false;
-		this.openDialog = false;
+		this.openApplyNowDialog = false;
+		this.openDeleteDialog = false;
 		this._scheduleId = null;
 	}
 
@@ -113,7 +117,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 
 		this.requestUpdate();
 
-		this.openDialog = false;
+		this.openApplyNowDialog = false;
 	}
 
 	async _handleDelete() {
@@ -122,16 +126,16 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		await this.scheduleService.deleteSchedule(this._scheduleId);
 
 		this.requestUpdate();
-		this.openDialog = false;
+		this.openDeleteDialog = false;
 	}
 
 	_handleDeleteWarningDialogClose() {
 		this.dispatchEvent(new CustomEvent('close'));
-		this.openDialog = false;
+		this.openDeleteDialog = false;
 	}
 
 	_handleDeleteWarningDialogOpen(event) {
-		this.openDialog = true;
+		this.openDeleteDialog = true;
 		this._scheduleId = event.target.getAttribute('schedule-id');
 	}
 
@@ -148,11 +152,11 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	_handleWarningDialogClose() {
 		this.dispatchEvent(new CustomEvent('close'));
-		this.openDialog = false;
+		this.openApplyNowDialog = false;
 	}
 
 	_handleWarningDialogOpen(event) {
-		this.openDialog = true;
+		this.openApplyNowDialog = true;
 		this._scheduleId = event.target.getAttribute('schedule-id');
 	}
 
@@ -222,7 +226,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		return html`
 			<d2l-dialog
 		        title-text="${this.localize('warningDialog:title')}"
-				?opened=${this.openDialog}
+				?opened=${this.openDeleteDialog}
 				@d2l-dialog-close=${this._handleDeleteWarningDialogClose}
 			>
 				<div>
@@ -284,7 +288,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		return html`
 			<d2l-dialog
 		        title-text="${this.localize('warningDialog:title')}"
-				?opened=${this.openDialog}
+				?opened=${this.openApplyNowDialog}
 				@d2l-dialog-close=${this._handleWarningDialogClose}
 			>
 				<div>
