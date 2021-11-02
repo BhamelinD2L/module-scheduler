@@ -6,6 +6,10 @@ export class ScheduleService {
 		return;
 	}
 
+	static async deleteSchedule(scheduleId) {
+		await Requests.deleteSchedule(scheduleId);
+	}
+
 	static async getAllSchedules() {
 		const allSchedules = await Requests.getAllSchedules();
 		return allSchedules;
@@ -35,7 +39,4 @@ export class ScheduleService {
 		return;
 	}
 
-	static async deleteSchedule(scheduleId) {
-		await Requests.deleteSchedule(scheduleId);
-	}
 }

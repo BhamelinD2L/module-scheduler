@@ -1,6 +1,11 @@
 import { Routes } from './routes.js';
 
 export class Requests {
+
+	static async deleteSchedule(scheduleId) {
+		await this._delete(Routes.DeleteSchedule(scheduleId));
+	}
+
 	static async getAllSchedules() {
 		return await this._get(Routes.AllSchedules());
 	}
@@ -28,10 +33,6 @@ export class Requests {
 
 	static async runSchedule(scheduleId) {
 		await this._post(Routes.RunSchedule(scheduleId));
-	}
-
-	static async runSchedule(scheduleId) {
-		await this._delete(Routes.DeleteSchedule(scheduleId));
 	}
 
 	// Helper Methods

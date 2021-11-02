@@ -30,7 +30,6 @@ export default {
 	"button:yes": "Yes",
 	"button:no": "No",
 	"button:delete": "Delete",
-	"button:cancel": "Cancel",
 	"status:processing": "Processing",
 	"ignoreList:title": "Ignore List for {scheduleName}",
 	"ignoreList:courseOfferingName": "Course Offering Name",

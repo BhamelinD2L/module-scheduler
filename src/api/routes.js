@@ -4,6 +4,7 @@ const D2L_BASE = `/d2l/api/lp/${API_VERSION}`;
 
 export class Routes {
 	static AllSchedules() { return `${SCHEDULES_ROUTE}/`; }
+	static DeleteSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/delete`; }
 	static IgnoreList(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/ignorelist`; }
 	static RunSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/run`; }
 	static SaveNewSchedule() { return SCHEDULES_ROUTE; }
@@ -11,5 +12,4 @@ export class Routes {
 	static SemesterOrgUnitType() { return `${D2L_BASE}/outypes/semester`; }
 	static Semesters(orgUnitTypeId) { return `${D2L_BASE}/orgstructure/?orgUnitType=${orgUnitTypeId}`; }
 	static UpdateSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/update`; }
-	static DeleteSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/delete`; }
 }
