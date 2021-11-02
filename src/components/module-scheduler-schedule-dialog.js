@@ -270,7 +270,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		};
 
 		try {
-			if (!this.schedule) {
+			if (!this.scheduleId) {
 				await this.scheduleService.createSchedule(schedule);
 			}
 			else {

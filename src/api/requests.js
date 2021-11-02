@@ -23,7 +23,7 @@ export class Requests {
 	}
 
 	static async putSchedule(scheduleId, schedule) {
-		return await this._put(Routes.Schedule(scheduleId), schedule);
+		return await this._put(Routes.UpdateSchedule(scheduleId), JSON.stringify(schedule));
 	}
 
 	static async runSchedule(scheduleId) {
