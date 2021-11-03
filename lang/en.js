@@ -34,5 +34,9 @@ export default {
 	"ignoreList:title": "Ignore List for {scheduleName}",
 	"ignoreList:courseOfferingName": "Course Offering Name",
 	"ignoreList:courseOfferingCode": "Course Offering Code",
-	"ignoreList:completionStatus": "Completion Status"
+	"ignoreList:completionStatus": "Completion Status",
+	"ignoreList:addToIgnoreListButton": "Add Course Offering",
+	"ignoreList:addToIgnoreListDialogTitle": "Add Course Offering to Ignore List",
+	"ignoreList:addToIgnoreListCourseOfferingId": "Course Offering Org Unit ID",
+	"ignoreList:addToIgnoreListDialogBtn": "Add"
 };

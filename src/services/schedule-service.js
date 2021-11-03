@@ -1,6 +1,12 @@
 import { Requests } from '../api/requests.js';
 
 export class ScheduleService {
+
+	static async addToIgnoreList(schedule, courseOfferingId) {
+		await Requests.addToIgnoreList(schedule, courseOfferingId);
+		return;
+	}
+
 	static async createSchedule(schedule) {
 		await Requests.postSchedule(schedule);
 		return;

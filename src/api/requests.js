@@ -2,6 +2,10 @@ import { Routes } from './routes.js';
 
 export class Requests {
 
+	static async addToIgnoreList(scheduleId, courseOfferingId) {
+		await this._put(Routes.IgnoreListAdd(scheduleId, courseOfferingId));
+	}
+
 	static async deleteSchedule(scheduleId) {
 		await this._delete(Routes.DeleteSchedule(scheduleId));
 	}
