@@ -38,6 +38,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			semesters: {
 				type: Array
 			},
+			openDialog: {
+				type: Boolean
+			},
 			_readyToShowDialog: {
 				type: Boolean
 			}
@@ -74,7 +77,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 
 		this.clearForm();
 		this.semesters = [];
+		this.openDialog = true;
 		this._readyToShowDialog = false;
+		this._closeActionType = null;
 	}
 
 	async connectedCallback() {
@@ -103,8 +108,8 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		return html`
 			<d2l-dialog
 				class="d2l-schedule-dialog"
-				?opened=${this._readyToShowDialog}
-				@d2l-dialog-close="${this.cancelDialog}"
+				?opened=${this._readyToShowDialog && this.openDialog}
+				@d2l-dialog-close="${this.handleDialogClose}"
 				title-text="${this.localize('scheduleDialog:title')}"
 				id="${DIALOG_ID}">
 				<div class="d2l-schedule-dialog-content">${this.renderForm()}</div>
@@ -116,7 +121,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 							primary>
 							${this.localize('button:save')}
 						</d2l-button>
-						<d2l-button @click="${this.cancelDialog}">
+						<d2l-button @click="${this.handleCancel}">
 							${this.localize('button:cancel')}
 						</d2l-button>
 					</span>
@@ -132,10 +137,6 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		}
 	}
 
-	async cancelDialog() {
-		this.closeDialog(CANCEL_ACTION);
-	}
-
 	clearForm() {
 		this.scheduleName = '';
 		this.scheduleJson = JSON_PLACEHOLDER;
@@ -145,16 +146,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		this.moduleIgnoreList = '';
 	}
 
-	async closeDialog(type) {
-		this.scheduleId = null;
-		this.clearForm();
-
-		const closeDialog = new CustomEvent('schedule-dialog-closed', {
-			bubbles: true,
-			composed: true,
-			detail: { type: type }
-		});
-		this.dispatchEvent(closeDialog);
+	closeDialog(closeActionType = CANCEL_ACTION) {
+		this._closeActionType = closeActionType;
+		this.openDialog = false;
 	}
 
 	async fetchSchedule() {
@@ -169,6 +163,28 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			this.subjectCode = body.courseOfferingSubjectCodeFilter;
 			this.moduleIgnoreList = body.moduleNameIgnoreList.join();
 		});
+	}
+
+	async finishClosingDialog(type) {
+		this.scheduleId = null;
+		this.clearForm();
+
+		const closeDialog = new CustomEvent('schedule-dialog-closed', {
+			bubbles: true,
+			composed: true,
+			detail: { type: type }
+		});
+		this.dispatchEvent(closeDialog);
+	}
+
+	handleCancel() {
+		this.closeDialog(CANCEL_ACTION);
+	}
+
+	async handleDialogClose() {
+		const closeActionType = this._closeActionType || CANCEL_ACTION;
+		this._closeActionType = null;
+		this.finishClosingDialog(closeActionType);
 	}
 
 	isValidForm() {
