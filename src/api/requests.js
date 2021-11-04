@@ -1,4 +1,15 @@
+import { query } from 'lit-element';
 import { Routes } from './routes.js';
+
+// This takes an object and returns a copy of that object with all the undefined
+// keys filtered out
+function filterUndefined(obj) {
+	return Object.keys(obj).reduce((acc, key) => {
+		if (obj[key] !== undefined) acc[key] = obj[key];
+
+		return acc;
+	}, {});
+}
 
 export class Requests {
 
@@ -10,8 +21,17 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
-	static async getIgnoreList(scheduleId) {
-		return await this._get(Routes.IgnoreList(scheduleId));
+	static async getIgnoreList(scheduleId, pageSize, pageNumber) {
+		const queryParams = {
+			pageSize,
+			pageNumber
+		};
+
+		return await this._get(Routes.IgnoreList(scheduleId), queryParams);
+	}
+
+	static async getIgnoreListCount(scheduleId) {
+		return await this._get(Routes.IgnoreListCount(scheduleId));
 	}
 
 	static async getSchedule(scheduleId) {
@@ -59,7 +79,14 @@ export class Requests {
 			});
 	}
 
-	static _get(url) {
+	static _get(baseUrl, queryParams) {
+		let url = baseUrl;
+
+		if (queryParams) {
+			const searchParams = new URLSearchParams(filterUndefined(queryParams));
+			url = `${url}?${searchParams.toString()}`;
+		}
+
 		const options = this._options('GET');
 		return this._fetch(url, options).then(r => r.json());
 	}

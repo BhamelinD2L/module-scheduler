@@ -1,3 +1,4 @@
+import '@brightspace-ui-labs/pagination/pagination.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { BaseMixin } from '../mixins/base-mixin.js';
 import completionStatusIdConverter from '../helpers/completion-status-codes.js';
@@ -11,9 +12,6 @@ import { tableStyles } from '@brightspace-ui/core/components/table/table-wrapper
 class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	static get properties() {
 		return {
-			isLoading: {
-				type: Boolean
-			},
 			scheduleId: {
 				type: String
 			},
@@ -22,7 +20,27 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			},
 			ignoreListItems: {
 				type: Array
-			}
+			},
+			_totalIgnoreListItems: {
+				type: Number,
+				attribute: false
+			},
+			_pageSize: {
+				type: Number,
+				attribute: false
+			},
+			_pageNumber: {
+				type: Number,
+				attribute: false
+			},
+			_isFetchingIgnoreList: {
+				type: Boolean,
+				attribute: false
+			},
+			_isFetchingSchedule: {
+				type: Boolean,
+				attribute: false
+			},
 		};
 	}
 
@@ -56,25 +74,34 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 		this.scheduleService = ScheduleServiceFactory.getScheduleService();
 
-		this.isLoading = true;
 		this.scheduleId = null,
 		this.scheduleName = null;
 		this.ignoreListItems = [];
+		this._totalIgnoreListItems = null;
+		this._pageSize = 20;
+		this._pageNumber = 1;
 
+		// Start the app in loading state
+		this._isFetchingIgnoreList = true;
+		this._isFetchingSchedule = true;
+	}
+
+	get isLoading() {
+		return this._isFetchingIgnoreList || this._isFetchingSchedule;
 	}
 
 	async connectedCallback() {
 		super.connectedCallback();
 
-		this.isLoading = true;
-
 		if (this.scheduleName === '') {
 			await this._fetchSchedule();
 		}
+	}
 
-		await this._fetchIgnoreList();
-
-		this.isLoading = false;
+	updated(changedProperties) {
+		if (changedProperties.has('_pageSize') || changedProperties.has('_pageNumber')) {
+			this._fetchIgnoreList();
+		}
 	}
 
 	render() {
@@ -90,17 +117,35 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	async _fetchIgnoreList() {
-		this.ignoreListItems = await this.scheduleService.getIgnoreList(this.scheduleId);
+		this._isFetchingIgnoreList = true;
+		[
+			this.ignoreListItems,
+			this._totalIgnoreListItems
+		] = await Promise.all([
+			this.scheduleService.getIgnoreList(this.scheduleId, this._pageSize, this._pageNumber),
+			this.scheduleService.getIgnoreListCount(this.scheduleId)
+		]);
+		this._isFetchingIgnoreList = false;
 	}
 
 	async _fetchSchedule() {
+		this._isFetchingSchedule = true;
 		try {
 			const schedule = await this.scheduleService.getSchedule(this.scheduleId);
 			this.scheduleName = schedule.scheduleName;
 		} catch (e) {
 			this.redirectTo404();
 		}
+		this._isFetchingSchedule = false;
+	}
 
+	_handleItemsPerPageChange(e) {
+		this._pageSize = e.detail.itemCount;
+		this._pageNumber = 1;
+	}
+
+	_handlePageChange(e) {
+		this._pageNumber = e.detail.page;
 	}
 
 	_renderIgnoreListItem(item) {
@@ -112,6 +157,22 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			<td>${item.lastCompletionStatusId ? completionStatusIdConverter.convertIdToText(item.lastCompletionStatusId) : ''}</td>
 		</tr>
 	`;
+	}
+
+	_renderPagination() {
+		const maxPageNumber = Math.floor((this._totalIgnoreListItems - 1) / this._pageSize) + 1;
+
+		return html`
+			<d2l-labs-pagination
+				page-number="${this._pageNumber}"
+				max-page-number="${maxPageNumber}"
+				show-item-count-select
+				item-count-options="[20,50,100,200]"
+				selected-count-option="${this._pageSize}"
+				@pagination-page-change=${this._handlePageChange}
+				@pagination-item-counter-change=${this._handleItemsPerPageChange}
+			></d2l-labs-pagination>
+		`;
 	}
 
 	_renderTable() {
@@ -129,6 +190,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				</tbody>
 			</table>
 		</d2l-table-wrapper>
+		${this._renderPagination()}
 		`;
 	}
 
