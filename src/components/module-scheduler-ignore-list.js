@@ -108,16 +108,6 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		}
 	}
 
-	updated(changedProperties) {
-		if (
-			changedProperties.has('_pageSize') ||
-			changedProperties.has('_pageNumber') ||
-			changedProperties.has('_searchText')
-		) {
-			this._fetchIgnoreList();
-		}
-	}
-
 	render() {
 		if (this._isFetchingSchedule) {
 			return renderSpinner();
@@ -129,6 +119,16 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			${this._renderSearch()}
 			${this._isFetchingIgnoreList ? renderSpinner() : this._renderTable()}
 		`;
+	}
+
+	updated(changedProperties) {
+		if (
+			changedProperties.has('_pageSize') ||
+			changedProperties.has('_pageNumber') ||
+			changedProperties.has('_searchText')
+		) {
+			this._fetchIgnoreList();
+		}
 	}
 
 	async _fetchIgnoreList() {

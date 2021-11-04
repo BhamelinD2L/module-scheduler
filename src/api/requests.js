@@ -1,4 +1,3 @@
-import { query } from 'lit-element';
 import { Routes } from './routes.js';
 
 // This takes an object and returns a copy of that object with all the undefined
