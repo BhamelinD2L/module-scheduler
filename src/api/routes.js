@@ -6,7 +6,7 @@ export class Routes {
 	static AllSchedules() { return `${SCHEDULES_ROUTE}/`; }
 	static DeleteSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/delete`; }
 	static IgnoreList(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/ignorelist`; }
-	static IgnoreListAdd(scheduleId, courseOfferingId) { return `${SCHEDULES_ROUTE}/${scheduleId}/ignorelist?courseOfferingId=${courseOfferingId}`; }
+	static IgnoreListAdd(scheduleId, courseOfferingId) { return `${SCHEDULES_ROUTE}/${scheduleId}/ignorelist/${courseOfferingId}`; }
 	static RunSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/run`; }
 	static SaveNewSchedule() { return SCHEDULES_ROUTE; }
 	static Schedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}`; }
