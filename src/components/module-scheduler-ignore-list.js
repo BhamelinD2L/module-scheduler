@@ -96,10 +96,8 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._pageSize = 20;
 		this._pageNumber = 1;
 		this._searchText = '';
-
-		// Start the app in loading state
-		this._isFetchingIgnoreList = true;
-		this._isFetchingSchedule = true;
+		this._isFetchingIgnoreList = false;
+		this._isFetchingSchedule = false;
 	}
 
 	async connectedCallback() {
@@ -151,7 +149,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			const schedule = await this.scheduleService.getSchedule(this.scheduleId);
 			this.scheduleName = schedule.scheduleName;
 		} catch (e) {
-			this.redirectTo404();
+			this.redirectToNotFound();
 		}
 		this._isFetchingSchedule = false;
 	}
