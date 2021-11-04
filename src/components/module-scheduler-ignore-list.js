@@ -1,3 +1,4 @@
+import '@brightspace-ui/core/components/inputs/input-search.js';
 import '@brightspace-ui-labs/pagination/pagination.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { BaseMixin } from '../mixins/base-mixin.js';
@@ -41,6 +42,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				type: Boolean,
 				attribute: false
 			},
+			_searchText: {
+				type: String,
+				attribute: false
+			}
 		};
 	}
 
@@ -65,6 +70,16 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					position: absolute;
 					transform: translateX(-50%);
 				}
+
+				.d2l-search-wrapper {
+					display: flex;
+					justify-content: flex-end;
+					margin-bottom: 15px;
+				}
+
+				.d2l-search {
+					flex: 0.35 1 0;
+				}
 			`
 		];
 	}
@@ -80,14 +95,11 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._totalIgnoreListItems = null;
 		this._pageSize = 20;
 		this._pageNumber = 1;
+		this._searchText = '';
 
 		// Start the app in loading state
 		this._isFetchingIgnoreList = true;
 		this._isFetchingSchedule = true;
-	}
-
-	get isLoading() {
-		return this._isFetchingIgnoreList || this._isFetchingSchedule;
 	}
 
 	async connectedCallback() {
@@ -99,20 +111,25 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	updated(changedProperties) {
-		if (changedProperties.has('_pageSize') || changedProperties.has('_pageNumber')) {
+		if (
+			changedProperties.has('_pageSize') ||
+			changedProperties.has('_pageNumber') ||
+			changedProperties.has('_searchText')
+		) {
 			this._fetchIgnoreList();
 		}
 	}
 
 	render() {
-		if (this.isLoading) {
+		if (this._isFetchingSchedule) {
 			return renderSpinner();
 		}
 
 		return html`
 			<h2>${this.localize('ignoreList:title', { scheduleName: this.scheduleName })}</h2>
 			<p>${this.localize('page:description')}</p>
-			${ this._renderTable() }
+			${this._renderSearch()}
+			${this._isFetchingIgnoreList ? renderSpinner() : this._renderTable()}
 		`;
 	}
 
@@ -122,8 +139,8 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			this.ignoreListItems,
 			this._totalIgnoreListItems
 		] = await Promise.all([
-			this.scheduleService.getIgnoreList(this.scheduleId, this._pageSize, this._pageNumber),
-			this.scheduleService.getIgnoreListCount(this.scheduleId)
+			this.scheduleService.getIgnoreList(this.scheduleId, this._searchText, this._pageSize, this._pageNumber),
+			this.scheduleService.getIgnoreListCount(this.scheduleId, this._searchText)
 		]);
 		this._isFetchingIgnoreList = false;
 	}
@@ -146,6 +163,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	_handlePageChange(e) {
 		this._pageNumber = e.detail.page;
+	}
+
+	_handleSearch(e) {
+		this._searchText = e.detail.value;
 	}
 
 	_renderIgnoreListItem(item) {
@@ -172,6 +193,19 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				@pagination-page-change=${this._handlePageChange}
 				@pagination-item-counter-change=${this._handleItemsPerPageChange}
 			></d2l-labs-pagination>
+		`;
+	}
+
+	_renderSearch() {
+		return html`
+			<div class="d2l-search-wrapper">
+				<d2l-input-search
+					class="d2l-search"
+					label="Search"
+					placeholder="Search"
+					@d2l-input-search-searched=${this._handleSearch}
+				></d2l-input-search>
+			</div>
 		`;
 	}
 

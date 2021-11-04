@@ -21,8 +21,9 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
-	static async getIgnoreList(scheduleId, pageSize, pageNumber) {
+	static async getIgnoreList(scheduleId, search, pageSize, pageNumber) {
 		const queryParams = {
+			search: search ? search : undefined,
 			pageSize,
 			pageNumber
 		};
@@ -30,8 +31,10 @@ export class Requests {
 		return await this._get(Routes.IgnoreList(scheduleId), queryParams);
 	}
 
-	static async getIgnoreListCount(scheduleId) {
-		return await this._get(Routes.IgnoreListCount(scheduleId));
+	static async getIgnoreListCount(scheduleId, search) {
+		const queryParams = { search: search ? search : undefined };
+
+		return await this._get(Routes.IgnoreListCount(scheduleId), queryParams);
 	}
 
 	static async getSchedule(scheduleId) {
@@ -84,7 +87,8 @@ export class Requests {
 
 		if (queryParams) {
 			const searchParams = new URLSearchParams(filterUndefined(queryParams));
-			url = `${url}?${searchParams.toString()}`;
+
+			if (searchParams.toString()) url = `${url}?${searchParams.toString()}`;
 		}
 
 		const options = this._options('GET');

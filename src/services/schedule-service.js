@@ -15,12 +15,12 @@ export class ScheduleService {
 		return allSchedules;
 	}
 
-	static async getIgnoreList(scheduleId, pageSize, pageNumber) {
-		return await Requests.getIgnoreList(scheduleId, pageSize, pageNumber);
+	static async getIgnoreList(scheduleId, search, pageSize, pageNumber) {
+		return await Requests.getIgnoreList(scheduleId, search, pageSize, pageNumber);
 	}
 
-	static async getIgnoreListCount(scheduleId) {
-		return await Requests.getIgnoreListCount(scheduleId);
+	static async getIgnoreListCount(scheduleId, search) {
+		return await Requests.getIgnoreListCount(scheduleId, search);
 	}
 
 	static async getSchedule(scheduleId) {
