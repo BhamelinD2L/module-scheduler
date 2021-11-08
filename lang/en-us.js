@@ -18,7 +18,7 @@ export default {
 	"scheduleDialog:name": "Name",
 	"scheduleDialog:semester": "Semester",
 	"scheduleDialog:chooseSemester": "Choose semester",
-	"scheduleDialog:session": "Session Code",
+	"scheduleDialog:session": "Catalog & Section Number",
 	"scheduleDialog:subject": "Subject Code",
 	"scheduleDialog:moduleIgnoreList": "Module Ignore Strings",
 	"scheduleDialog:deliveryBlocks": "Delivery Blocks",
