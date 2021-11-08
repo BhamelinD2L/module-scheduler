@@ -179,7 +179,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	_renderPagination() {
-		const maxPageNumber = Math.floor((this._totalIgnoreListItems - 1) / this._pageSize) + 1;
+		const maxPageNumber = Math.max(
+			Math.floor((this._totalIgnoreListItems - 1) / this._pageSize) + 1,
+			1
+		);
 
 		return html`
 			<d2l-labs-pagination
