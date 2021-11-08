@@ -188,8 +188,8 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		<tr>
 			<td>${item.courseOfferingName}</td>
 			<td>${item.courseOfferingCode}</td>
-			<td>${getDateFromISODateTime(item.lastDateApplied).toLocaleString()}</td>
-			<td>${completionStatusIdConverter.convertIdToText(item.lastCompletionStatusId)}</td>
+			<td>${item.lastDateApplied ? getDateFromISODateTime(item.lastDateApplied).toLocaleString() : ''}</td>
+			<td>${item.lastCompletionStatusId ? completionStatusIdConverter.convertIdToText(item.lastCompletionStatusId) : ''}</td>
 		</tr>
 	`;
 	}

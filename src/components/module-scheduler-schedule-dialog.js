@@ -211,16 +211,6 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				${this.semesters.map((option) => this.renderSelectOptions(option, this.semesterId))}
 			</select>
 
-            <label for="sessionCode" class="d2l-label-text">${this.localize('scheduleDialog:session')}</label>
-			<d2l-input-text
-				autocomplete="off"
-				id="sessionCode"
-				value="${this.sessionCode || ''}"
-				@change=${this._handleSessionCodeChange}
-				label=${this.localize('scheduleDialog:session')}
-				label-hidden>
-			</d2l-input-text>
-
             <label for="subjectCode" class="d2l-label-text">${this.localize('scheduleDialog:subject')}</label>
 			<d2l-input-text
 				autocomplete="off"
@@ -228,6 +218,16 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				value="${this.subjectCode || ''}"
 				@change=${this._handleSubjectCodeChange}
 				label=${this.localize('scheduleDialog:subject')}
+				label-hidden>
+			</d2l-input-text>
+
+            <label for="sessionCode" class="d2l-label-text">${this.localize('scheduleDialog:session')}</label>
+			<d2l-input-text
+				autocomplete="off"
+				id="sessionCode"
+				value="${this.sessionCode || ''}"
+				@change=${this._handleSessionCodeChange}
+				label=${this.localize('scheduleDialog:session')}
 				label-hidden>
 			</d2l-input-text>
 
