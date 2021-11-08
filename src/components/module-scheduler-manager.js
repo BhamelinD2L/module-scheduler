@@ -123,12 +123,12 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 	async _handleDelete() {
 		await this.scheduleService.deleteSchedule(this._scheduleId);
 		this.openDeleteDialog = false;
-		await this._loadSchedules();
 	}
 
-	_handleDeleteWarningDialogClose() {
-		this.dispatchEvent(new CustomEvent('close'));
+	async _handleDeleteWarningDialogClose() {
 		this.openDeleteDialog = false;
+		this.dispatchEvent(new CustomEvent('close'));
+		await this._loadSchedules();
 	}
 
 	_handleDeleteWarningDialogOpen(event) {
