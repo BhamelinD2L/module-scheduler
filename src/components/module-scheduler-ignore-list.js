@@ -1,3 +1,4 @@
+import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/button/button.js';
 import '@brightspace-ui/core/components/dialog/dialog.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
@@ -35,6 +36,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			},
 			ignoreListItems: {
 				type: Array
+			},
+			showAddToIgnoreListAlert: {
+				type: Boolean
 			}
 		};
 	}
@@ -64,6 +68,15 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				.d2l-add-to-ignore-list-btn {
 					margin-bottom: 5px;
 				}
+
+				.d2l-dialog-footer {
+					display: flex;
+					height: 70px;
+				}
+
+				.d2l-add-to-ignore-list-dialog-btn {
+					margin: auto 20px auto 0;
+				}
 			`
 		];
 	}
@@ -80,6 +93,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.scheduleName = null;
 		this.showAddToIgnoreListDialog = false;
 		this.ignoreListItems = [];
+		this.showAddToIgnoreListAlert = false;
 
 	}
 
@@ -112,8 +126,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		// TODO: Validate org unit ID?
 		try {
 			await this.scheduleService.addToIgnoreList(this.scheduleId, this.addToScheduleCourseOfferingId);
-			this.handleAddToIgnoreListDialogClose();
+			this.addToScheduleCourseOfferingId = '';
+			this._handleAddToIgnoreListDialogClose();
 		} catch (err) {
+			this.showAddToIgnoreListAlert = true;
 			// TODO: handle errors
 		} finally {
 			await this._fetchIgnoreList();
@@ -137,8 +153,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.showAddToIgnoreListDialog = false;
 	}
 
-	_handleCourseOfferingIdChange(e) {
+	_handleCourseOfferingIdInput(e) {
 		this.addToScheduleCourseOfferingId = e.target.value;
+		this.showAddToIgnoreListAlert = false;
 	}
 
 	async _openAddToIgnoreListDialog() {
@@ -152,7 +169,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			<d2l-dialog
 				class="d2l-add-to-ignore-list-dialog"
 				title-text="${this.localize('ignoreList:addToIgnoreListDialogTitle')}"
-				@d2l-dialog-close="${this.handleAddToIgnoreListDialogClose}"
+				@d2l-dialog-close="${this._handleAddToIgnoreListDialogClose}"
 				id="${ADD_TO_IGNORE_LIST_DIALOG_ID}"
 				?opened="${this.showAddToIgnoreListDialog}"
 				>
@@ -163,9 +180,8 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					<d2l-input-text
 						autocomplete="off"
 						id="addToIgnoreListCourseOfferingId"
-						required
 						value="${this.addToScheduleCourseOfferingId || ''}"
-						@change=${this._handleCourseOfferingIdChange}
+						@input=${this._handleCourseOfferingIdInput}
 						label=${this.localize('ignoreList:addToIgnoreListCourseOfferingId')}
 						label-hidden
 						>
@@ -173,11 +189,17 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				</div>
 				<div slot="footer" class="d2l-dialog-footer">
 					<d2l-button
+						class="d2l-add-to-ignore-list-dialog-btn"
 						?disabled="${!this.addToScheduleCourseOfferingId}"
 						@click="${this._add}"
 						primary>
 						${this.localize('ignoreList:addToIgnoreListDialogBtn')}
 					</d2l-button>
+					<d2l-alert
+						type="warning"
+						?hidden="${!this.showAddToIgnoreListAlert}">
+						${this.localize('ignoreList:addToIgnoreListDialogAlert')}
+					</d2l-alert>
 				</div>
 			</d2l-dialog>
 		`;

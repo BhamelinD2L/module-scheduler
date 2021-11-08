@@ -38,5 +38,6 @@ export default {
 	"ignoreList:addToIgnoreListButton": "Add Course Offering",
 	"ignoreList:addToIgnoreListDialogTitle": "Add Course Offering to Ignore List",
 	"ignoreList:addToIgnoreListCourseOfferingId": "Course Offering Org Unit ID",
-	"ignoreList:addToIgnoreListDialogBtn": "Add"
+	"ignoreList:addToIgnoreListDialogBtn": "Add",
+	"ignoreList:addToIgnoreListDialogAlert": "The Course Offering could not be added."
 };
