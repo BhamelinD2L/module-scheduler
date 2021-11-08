@@ -1,4 +1,5 @@
 import { css, html, LitElement } from 'lit-element/lit-element';
+import { AppRoutes } from '../helpers/app-routes.js';
 import { BaseMixin } from '../mixins/base-mixin.js';
 import completionStatusIdConverter from '../helpers/completion-status-codes.js';
 import { getDateFromISODateTime } from '@brightspace-ui/core/helpers/dateTime.js';
@@ -47,6 +48,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					position: absolute;
 					transform: translateX(-50%);
 				}
+
+				.d2l-ignore-list-title {
+					margin-top: 10px;
+				}
 			`
 		];
 	}
@@ -83,7 +88,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		}
 
 		return html`
-			<h2>${this.localize('ignoreList:title', { scheduleName: this.scheduleName })}</h2>
+			<d2l-button-subtle
+				@click="${this._handleBackToHome}"
+				icon="tier3:chevron-left"
+				text=${ this.localize('button:back') }>
+			</d2l-button-subtle>
+			<h2 class="d2l-ignore-list-title">${this.localize('ignoreList:title', { scheduleName: this.scheduleName })}</h2>
 			<p>${this.localize('page:description')}</p>
 			${ this._renderTable() }
 		`;
@@ -101,6 +111,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			this.redirectTo404();
 		}
 
+	}
+
+	_handleBackToHome() {
+		this.navigateTo(AppRoutes.Home());
 	}
 
 	_renderIgnoreListItem(item) {

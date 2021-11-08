@@ -29,6 +29,7 @@ export default {
 	"deleteDialog:content": "Once this schedule is removed you will not be able to modify or run it. Are you sure?",
 	"button:yes": "Yes",
 	"button:no": "No",
+	"button:back": "Back",
 	"button:delete": "Delete",
 	"status:processing": "Processing",
 	"ignoreList:title": "Ignore List for {scheduleName}",
