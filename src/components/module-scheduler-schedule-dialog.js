@@ -160,7 +160,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			this.scheduleJson = body.scheduleJson;
 			this.semesterId = String(body.courseOfferingSemesterId);
 			this.sessionCode = body.courseOfferingSessionCodeFilter;
-			this.subjectCode = body.courseOfferingSubjectCodeFilter;
+			this.subjectCode = body.courseOfferingSubjectCodeFilter.join();
 			this.moduleIgnoreList = body.moduleNameIgnoreList.join();
 		});
 	}
@@ -280,7 +280,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			scheduleName: this.scheduleName,
 			courseOfferingSemesterId: this.semesterId,
 			courseOfferingSessionCodeFilter: this.sessionCode,
-			courseOfferingSubjectCodeFilter: this.subjectCode,
+			courseOfferingSubjectCodeFilter: this.subjectCode.split(','),
 			moduleNameIgnoreList: this.moduleIgnoreList.split(','),
 			scheduleJson: this.scheduleJson
 		};

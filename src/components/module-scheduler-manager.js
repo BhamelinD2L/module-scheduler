@@ -254,7 +254,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				</td>
 				<td>${schedule.courseOfferingSemesterName}</td>
 				<td>${schedule.courseOfferingSessionCodeFilter}</td>
-				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
+				<td>${schedule.courseOfferingSubjectCodeFilter.join(', ')}</td>
 				<td>${lastDateApplied}</td>
 			</tr>
 		`;
