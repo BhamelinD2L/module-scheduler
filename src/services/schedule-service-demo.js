@@ -17,9 +17,9 @@ export class ScheduleServiceDemo {
 			scheduleName: 'Math',
 			courseOfferingSemesterId: '10101',
 			courseOfferingSemesterName: 'Fall',
-			courseOfferingSessionCodeFilter: 'S100',
-			courseOfferingSubjectCodeFilter: 'Math101',
-			moduleNameIgnoreList: 'Eng',
+			courseOfferingSessionCodeFilter: '100',
+			courseOfferingSubjectCodeFilter: ['Math', 'Eng'],
+			moduleNameIgnoreList: ['xxx', 'www'],
 			scheduleJson: '',
 			createdByUserId: 1,
 			createdDate: '2021-06-01T19:57:39.290Z',
@@ -30,9 +30,9 @@ export class ScheduleServiceDemo {
 			scheduleName: 'English',
 			courseOfferingSemesterId: '10007',
 			courseOfferingSemesterName: 'Spring',
-			courseOfferingSessionCodeFilter: 'S100',
-			courseOfferingSubjectCodeFilter: 'Eng101',
-			moduleNameIgnoreList: 'Math',
+			courseOfferingSessionCodeFilter: '100_CR',
+			courseOfferingSubjectCodeFilter: ['Eng'],
+			moduleNameIgnoreList: ['www'],
 			scheduleJson: '',
 			createdByUserId: 1,
 			createdDate: '2021-06-01T19:57:39.290Z',
@@ -43,9 +43,9 @@ export class ScheduleServiceDemo {
 			scheduleName: 'Math',
 			courseOfferingSemesterId: '10001',
 			courseOfferingSemesterName: 'Winter',
-			courseOfferingSessionCodeFilter: 'S100',
-			courseOfferingSubjectCodeFilter: 'Math101',
-			moduleNameIgnoreList: 'Eng',
+			courseOfferingSessionCodeFilter: '100',
+			courseOfferingSubjectCodeFilter: ['Math'],
+			moduleNameIgnoreList: ['www'],
 			scheduleJson: '',
 			createdByUserId: 1,
 			createdDate: '2021-06-01T19:57:39.290Z',
@@ -89,6 +89,10 @@ export class ScheduleServiceDemo {
 
 	static async getIgnoreList() {
 		return this.ignoreListItems;
+	}
+
+	static async getIgnoreListCount() {
+		return this.ignoreListItems.length;
 	}
 
 	static async getSchedule(scheduleId) {

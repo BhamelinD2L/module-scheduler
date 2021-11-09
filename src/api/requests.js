@@ -1,5 +1,15 @@
 import { Routes } from './routes.js';
 
+// This takes an object and returns a copy of that object with all the undefined
+// keys filtered out
+function filterUndefined(obj) {
+	return Object.keys(obj).reduce((acc, key) => {
+		if (obj[key] !== undefined) acc[key] = obj[key];
+
+		return acc;
+	}, {});
+}
+
 export class Requests {
 
 	static async addToIgnoreList(scheduleId, courseOfferingId) {
@@ -14,8 +24,20 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
-	static async getIgnoreList(scheduleId) {
-		return await this._get(Routes.IgnoreList(scheduleId));
+	static async getIgnoreList(scheduleId, search, pageSize, pageNumber) {
+		const queryParams = {
+			search: search ? search : undefined,
+			pageSize,
+			pageNumber
+		};
+
+		return await this._get(Routes.IgnoreList(scheduleId), queryParams);
+	}
+
+	static async getIgnoreListCount(scheduleId, search) {
+		const queryParams = { search: search ? search : undefined };
+
+		return await this._get(Routes.IgnoreListCount(scheduleId), queryParams);
 	}
 
 	static async getSchedule(scheduleId) {
@@ -63,7 +85,15 @@ export class Requests {
 			});
 	}
 
-	static _get(url) {
+	static _get(baseUrl, queryParams) {
+		let url = baseUrl;
+
+		if (queryParams) {
+			const searchParams = new URLSearchParams(filterUndefined(queryParams));
+
+			if (searchParams.toString()) url = `${url}?${searchParams.toString()}`;
+		}
+
 		const options = this._options('GET');
 		return this._fetch(url, options).then(r => r.json());
 	}
