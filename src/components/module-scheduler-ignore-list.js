@@ -67,7 +67,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				}
 
 				.d2l-add-to-ignore-list-btn {
-					margin-bottom: 5px;
+					margin-bottom: 10px;
+				}
+
+				.d2l-add-to-ignore-list-btn > d2l-icon {
+					color: inherit;
+					margin-right: 5px;
 				}
 
 				.d2l-dialog-footer {
@@ -122,11 +127,13 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			</d2l-button-subtle>
 			<h2 class="d2l-ignore-list-title">${this.localize('ignoreList:title', { scheduleName: this.scheduleName })}</h2>
 			<p>${this.localize('page:description')}</p>
-			<d2l-button-subtle
+			<d2l-button
+				primary
 				class="d2l-add-to-ignore-list-btn"
-				@click="${this._openAddToIgnoreListDialog}"
-				text=${ this.localize('ignoreList:addToIgnoreListButton') }>
-			</d2l-button-subtle>
+				@click="${this._openAddToIgnoreListDialog}">
+				<d2l-icon icon="tier1:plus-large-thick"></d2l-icon>
+				${ this.localize('ignoreList:addToIgnoreListButton') }
+			</d2l-button>
 			${ this._renderTable() }
 		`;
 	}
