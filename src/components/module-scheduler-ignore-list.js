@@ -16,30 +16,30 @@ const ADD_TO_IGNORE_LIST_DIALOG_ID = 'd2l-add-to-ignore-list-dialog';
 class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	static get properties() {
 		return {
-			addToScheduleCourseOfferingId: {
-				type: String
-			},
-			isLoadingSchedule: {
-				type: Boolean
-			},
-			isLoadingIgnoreList: {
-				type: Boolean
-			},
 			scheduleId: {
 				type: String
 			},
 			scheduleName: {
 				type: String
 			},
-			showAddToIgnoreListDialog: {
-				type: Boolean
-			},
 			ignoreListItems: {
 				type: Array
 			},
-			showAddToIgnoreListAlert: {
+			_isFetchingSchedule: {
 				type: Boolean
-			}
+			},
+			_isFetchingIgnoreList: {
+				type: Boolean
+			},
+			_showAddToIgnoreListAlert: {
+				type: Boolean
+			},
+			_showAddToIgnoreListDialog: {
+				type: Boolean
+			},
+			_addToScheduleCourseOfferingId: {
+				type: String
+			},
 		};
 	}
 
@@ -86,15 +86,14 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 		this.scheduleService = ScheduleServiceFactory.getScheduleService();
 
-		this.addToScheduleCourseOfferingId = '';
-		this.isLoadingSchedule = true;
-		this.isLoadingIgnoreList = false;
 		this.scheduleId = null,
 		this.scheduleName = null;
-		this.showAddToIgnoreListDialog = false;
 		this.ignoreListItems = [];
-		this.showAddToIgnoreListAlert = false;
-
+		this._isFetchingIgnoreList = false;
+		this._isFetchingSchedule = true;
+		this._showAddToIgnoreListAlert = false;
+		this._showAddToIgnoreListDialog = false;
+		this._addToScheduleCourseOfferingId = '';
 	}
 
 	async connectedCallback() {
@@ -105,7 +104,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	render() {
-		if (this.isLoadingSchedule) {
+		if (this._isFetchingSchedule) {
 			return renderSpinner();
 		}
 
@@ -125,11 +124,11 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	async _add() {
 		// TODO: Validate org unit ID?
 		try {
-			await this.scheduleService.addToIgnoreList(this.scheduleId, this.addToScheduleCourseOfferingId);
-			this.addToScheduleCourseOfferingId = '';
+			await this.scheduleService.addToIgnoreList(this.scheduleId, this._addToScheduleCourseOfferingId);
+			this._addToScheduleCourseOfferingId = '';
 			this._handleAddToIgnoreListDialogClose();
 		} catch (err) {
-			this.showAddToIgnoreListAlert = true;
+			this._showAddToIgnoreListAlert = true;
 			// TODO: handle errors
 		} finally {
 			await this._fetchIgnoreList();
@@ -137,29 +136,33 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	async _fetchIgnoreList() {
-		this.isLoadingIgnoreList = true;
+		this._isFetchingIgnoreList = true;
 		this.ignoreListItems = await this.scheduleService.getIgnoreList(this.scheduleId);
-		this.isLoadingIgnoreList = false;
+		this._isFetchingIgnoreList = false;
 	}
 
 	async _fetchSchedule() {
-		this.isLoadingSchedule = true;
-		const schedule = await this.scheduleService.getSchedule(this.scheduleId);
-		this.scheduleName = schedule.scheduleName;
-		this.isLoadingSchedule = false;
+		this._isFetchingSchedule = true;
+		try {
+			const schedule = await this.scheduleService.getSchedule(this.scheduleId);
+			this.scheduleName = schedule.scheduleName;
+		} catch (e) {
+			this.redirectToNotFound();
+		}
+		this._isFetchingSchedule = false;
 	}
 
 	async _handleAddToIgnoreListDialogClose() {
-		this.showAddToIgnoreListDialog = false;
+		this._showAddToIgnoreListDialog = false;
 	}
 
 	_handleCourseOfferingIdInput(e) {
-		this.addToScheduleCourseOfferingId = e.target.value;
-		this.showAddToIgnoreListAlert = false;
+		this._addToScheduleCourseOfferingId = e.target.value;
+		this._showAddToIgnoreListAlert = false;
 	}
 
 	async _openAddToIgnoreListDialog() {
-		this.showAddToIgnoreListDialog = true;
+		this._showAddToIgnoreListDialog = true;
 		await new Promise((r) => setTimeout(r, 0));
 		this.shadowRoot.getElementById('addToIgnoreListCourseOfferingId').focus();
 	}
@@ -171,7 +174,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				title-text="${this.localize('ignoreList:addToIgnoreListDialogTitle')}"
 				@d2l-dialog-close="${this._handleAddToIgnoreListDialogClose}"
 				id="${ADD_TO_IGNORE_LIST_DIALOG_ID}"
-				?opened="${this.showAddToIgnoreListDialog}"
+				?opened="${this._showAddToIgnoreListDialog}"
 				>
 				<div class="d2l-add-to-ignore-list-dialog-content">
 					<label for="addToIgnoreListCourseOfferingId">
@@ -180,7 +183,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					<d2l-input-text
 						autocomplete="off"
 						id="addToIgnoreListCourseOfferingId"
-						value="${this.addToScheduleCourseOfferingId || ''}"
+						value="${this._addToScheduleCourseOfferingId || ''}"
 						@input=${this._handleCourseOfferingIdInput}
 						label=${this.localize('ignoreList:addToIgnoreListCourseOfferingId')}
 						label-hidden
@@ -190,14 +193,14 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				<div slot="footer" class="d2l-dialog-footer">
 					<d2l-button
 						class="d2l-add-to-ignore-list-dialog-btn"
-						?disabled="${!this.addToScheduleCourseOfferingId}"
+						?disabled="${!this._addToScheduleCourseOfferingId}"
 						@click="${this._add}"
 						primary>
 						${this.localize('ignoreList:addToIgnoreListDialogBtn')}
 					</d2l-button>
 					<d2l-alert
 						type="warning"
-						?hidden="${!this.showAddToIgnoreListAlert}">
+						?hidden="${!this._showAddToIgnoreListAlert}">
 						${this.localize('ignoreList:addToIgnoreListDialogAlert')}
 					</d2l-alert>
 				</div>
@@ -227,7 +230,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					<th>${this.localize('ignoreList:completionStatus')}</th>
 				</thead>
 				<tbody>
-					${ this.isLoadingIgnoreList ? renderSpinner() : this._renderTableItems() }
+					${ this._isFetchingIgnoreList ? renderSpinner() : this._renderTableItems() }
 				</tbody>
 			</table>
 		</d2l-table-wrapper>
