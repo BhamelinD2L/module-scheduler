@@ -6,7 +6,7 @@ export default {
 	"page:addNewButton": "Add New",
 	"tableHeader:scheduleName": "Schedule Name",
 	"tableHeader:semester": "Semester",
-	"tableHeader:session": "Session",
+	"tableHeader:session": "Catalog & Section",
 	"tableHeader:subject": "Subject",
 	"tableHeader:lastDateApplied": "Last Date Applied",
 	"contextMenu:label": "Menu",
