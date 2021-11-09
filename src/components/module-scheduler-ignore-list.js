@@ -87,8 +87,8 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				}
 
 				.d2l-add-to-ignore-list-btn {
-					margin-bottom: 10px;
 					flex: 0;
+					margin-bottom: 10px;
 				}
 
 				.d2l-add-to-ignore-list-btn > d2l-icon {
@@ -111,13 +111,13 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				}
 
 				.d2l-buttons-wrapper {
-					flex: 0.5 1 0;
 					display: flex;
+					flex: 0.5 1 0;
 				}
 
 				.d2l-search-wrapper {
-					flex: 0.5 1 0;
 					display: flex;
+					flex: 0.5 1 0;
 					justify-content: flex-end;
 				}
 
