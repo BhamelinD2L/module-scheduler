@@ -253,8 +253,8 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 					${this._renderContextMenu(schedule.scheduleId)}
 				</td>
 				<td>${schedule.courseOfferingSemesterName}</td>
-				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
 				<td>${schedule.courseOfferingSessionCodeFilter}</td>
+				<td>${schedule.courseOfferingSubjectCodeFilter.join(', ')}</td>
 				<td>${lastDateApplied}</td>
 			</tr>
 		`;
