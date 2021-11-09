@@ -80,6 +80,10 @@ export class ScheduleServiceDemo {
 		return this.ignoreListItems;
 	}
 
+	static async getIgnoreListCount() {
+		return this.ignoreListItems.length;
+	}
+
 	static async getSchedule(scheduleId) {
 		const schedule = this.schedules.find(x => x.scheduleId === scheduleId);
 		return (schedule || this.schedules[0]);
