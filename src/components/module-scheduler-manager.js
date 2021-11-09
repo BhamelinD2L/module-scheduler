@@ -267,8 +267,8 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 					<thead>
 						<th>${this.localize('tableHeader:scheduleName')}</th>
 						<th>${this.localize('tableHeader:semester')}</th>
-						<th>${this.localize('tableHeader:session')}</th>
 						<th>${this.localize('tableHeader:subject')}</th>
+						<th>${this.localize('tableHeader:session')}</th>
 						<th>${this.localize('tableHeader:lastDateApplied')}</th>
 					</thead>
 					<tbody>
