@@ -123,12 +123,12 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 	async _handleDelete() {
 		await this.scheduleService.deleteSchedule(this._scheduleId);
 		this.openDeleteDialog = false;
-		await this._loadSchedules();
 	}
 
-	_handleDeleteWarningDialogClose() {
-		this.dispatchEvent(new CustomEvent('close'));
+	async _handleDeleteWarningDialogClose() {
 		this.openDeleteDialog = false;
+		this.dispatchEvent(new CustomEvent('close'));
+		await this._loadSchedules();
 	}
 
 	_handleDeleteWarningDialogOpen(event) {
@@ -253,8 +253,8 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 					${this._renderContextMenu(schedule.scheduleId)}
 				</td>
 				<td>${schedule.courseOfferingSemesterName}</td>
-				<td>${schedule.courseOfferingSessionCodeFilter}</td>
 				<td>${schedule.courseOfferingSubjectCodeFilter}</td>
+				<td>${schedule.courseOfferingSessionCodeFilter}</td>
 				<td>${lastDateApplied}</td>
 			</tr>
 		`;
@@ -267,8 +267,8 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 					<thead>
 						<th>${this.localize('tableHeader:scheduleName')}</th>
 						<th>${this.localize('tableHeader:semester')}</th>
-						<th>${this.localize('tableHeader:session')}</th>
 						<th>${this.localize('tableHeader:subject')}</th>
+						<th>${this.localize('tableHeader:session')}</th>
 						<th>${this.localize('tableHeader:lastDateApplied')}</th>
 					</thead>
 					<tbody>
