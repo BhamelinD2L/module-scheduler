@@ -164,6 +164,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._isFetchingSchedule = false;
 	}
 
+	_handleBackToHome() {
+		this.navigateTo(AppRoutes.Home());
+	}
+
 	_handleItemsPerPageChange(e) {
 		this._pageSize = e.detail.itemCount;
 		this._pageNumber = 1;
@@ -175,10 +179,6 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	_handleSearch(e) {
 		this._searchText = e.detail.value;
-	}
-
-	_handleBackToHome() {
-		this.navigateTo(AppRoutes.Home());
 	}
 
 	_renderIgnoreListItem(item) {
