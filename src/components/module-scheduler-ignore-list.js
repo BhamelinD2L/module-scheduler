@@ -166,6 +166,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._showAddToIgnoreListDialog = false;
 	}
 
+	_handleBackToHome() {
+		this.navigateTo(AppRoutes.Home());
+	}
+
 	_handleCourseOfferingIdInput(e) {
 		this._addToScheduleCourseOfferingId = e.target.value;
 		this._showAddToIgnoreListAlert = false;
@@ -216,10 +220,6 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				</div>
 			</d2l-dialog>
 		`;
-	}
-
-	_handleBackToHome() {
-		this.navigateTo(AppRoutes.Home());
 	}
 
 	_renderIgnoreListItem(item) {
