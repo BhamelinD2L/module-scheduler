@@ -246,8 +246,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.navigateTo(AppRoutes.Home());
 	}
 
-	async _handleCloseRemoveAllConfirmDialog() {
+	async _handleCloseRemoveAllConfirmDialog(e) {
 		this._removeAllConfirmDialogOpened = false;
+
+		if (e.detail.action !== 'yes') return;
 
 		this._clearSelectedItems();
 
@@ -262,8 +264,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		}
 	}
 
-	async _handleCloseRemoveSelectedConfirmDialog() {
+	async _handleCloseRemoveSelectedConfirmDialog(e) {
 		this._removeSelectedConfirmDialogOpened = false;
+
+		if (e.detail.action !== 'yes') return;
 
 		const itemsToDelete = Array.from(this._selectedItems);
 		this._clearSelectedItems();
