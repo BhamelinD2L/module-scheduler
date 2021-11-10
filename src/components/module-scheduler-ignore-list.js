@@ -193,14 +193,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	async _add() {
-		// TODO: Validate org unit ID?
 		try {
 			await this.scheduleService.addToIgnoreList(this.scheduleId, this._addToScheduleCourseOfferingId);
 			this._addToScheduleCourseOfferingId = '';
 			this._handleAddToIgnoreListDialogClose();
 		} catch (err) {
 			this._showAddToIgnoreListAlert = true;
-			// TODO: handle errors
 		} finally {
 			await this._fetchIgnoreList();
 		}
