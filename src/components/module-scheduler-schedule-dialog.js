@@ -63,9 +63,6 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				d2l-input-text {
 					margin-bottom: 18px;
 				}
-				d2l-loading-spinner {
-					height: 600px;
-				}
 			`
 		];
 	}
