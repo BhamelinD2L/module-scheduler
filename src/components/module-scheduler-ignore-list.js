@@ -105,7 +105,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					margin: auto 20px auto 0;
 				}
 
-				.d2l-tools-wrapper {
+				.d2l-action-bar {
 					display: flex;
 					margin-bottom: 15px;
 				}
@@ -174,10 +174,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			</d2l-button-subtle>
 			<h2 class="d2l-ignore-list-title">${this.localize('ignoreList:title', { scheduleName: this.scheduleName })}</h2>
 			<p>${this.localize('page:description')}</p>
-			<div class="d2l-tools-wrapper">
-				${this._renderButtons()}
+			<div class="d2l-action-bar">
+				${this._renderActionButtons()}
 				${this._renderSearch()}
-			
 			</div>
 			${this._isFetchingIgnoreList ? renderSpinner() : this._renderTable()}
 		`;
@@ -263,6 +262,20 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.shadowRoot.getElementById('addToIgnoreListCourseOfferingId').focus();
 	}
 
+	_renderActionButtons() {
+		return html`
+			<div class="d2l-buttons-wrapper">
+				<d2l-button
+					primary
+					class="d2l-add-to-ignore-list-btn"
+					@click="${this._openAddToIgnoreListDialog}">
+					<d2l-icon icon="tier1:plus-large-thick"></d2l-icon>
+					${ this.localize('ignoreList:addToIgnoreListButton') }
+				</d2l-button>
+			</div>
+		`;
+	}
+
 	_renderAddToIgnoreListDialog() {
 		return html`
 			<d2l-dialog
@@ -301,20 +314,6 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					</d2l-alert>
 				</div>
 			</d2l-dialog>
-		`;
-	}
-
-	_renderButtons() {
-		return html`
-			<div class="d2l-buttons-wrapper">
-				<d2l-button
-					primary
-					class="d2l-add-to-ignore-list-btn"
-					@click="${this._openAddToIgnoreListDialog}">
-					<d2l-icon icon="tier1:plus-large-thick"></d2l-icon>
-					${ this.localize('ignoreList:addToIgnoreListButton') }
-				</d2l-button>
-			</div>
 		`;
 	}
 
