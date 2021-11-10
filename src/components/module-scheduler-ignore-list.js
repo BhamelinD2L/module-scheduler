@@ -240,7 +240,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	_handleSearch(e) {
-		this._searchText = e.detail.value;
+		this._searchText = e.detail.value.trim();
 		this._pageNumber = 1;
 	}
 
