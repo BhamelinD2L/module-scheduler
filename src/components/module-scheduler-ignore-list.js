@@ -154,7 +154,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	async connectedCallback() {
 		super.connectedCallback();
 
-		await this._fetchSchedule();
+		if (this.scheduleName === '') {
+			await this._fetchSchedule();
+		}
 		await this._fetchIgnoreList();
 	}
 
