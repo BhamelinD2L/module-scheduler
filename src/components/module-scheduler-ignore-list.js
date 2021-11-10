@@ -107,22 +107,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 				.d2l-action-bar {
 					display: flex;
+					justify-content: space-between;
 					margin-bottom: 15px;
 				}
 
-				.d2l-buttons-wrapper {
-					display: flex;
-					flex: 0.5 1 0;
-				}
-
-				.d2l-search-wrapper {
-					display: flex;
-					flex: 0.5 1 0;
-					justify-content: flex-end;
-				}
-
 				.d2l-search {
-					flex: 0.8 1 0;
+					flex: 0.45 1 0;
 				}
 
 				.d2l-ignore-list-title {
@@ -262,7 +252,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	_renderActionButtons() {
 		return html`
-			<div class="d2l-buttons-wrapper">
+			<div>
 				<d2l-button
 					primary
 					class="d2l-add-to-ignore-list-btn"
@@ -347,14 +337,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	_renderSearch() {
 		return html`
-			<div class="d2l-search-wrapper">
-				<d2l-input-search
-					class="d2l-search"
-					label="Search"
-					placeholder="Search"
-					@d2l-input-search-searched=${this._handleSearch}
-				></d2l-input-search>
-			</div>
+			<d2l-input-search
+				class="d2l-search"
+				label="Search"
+				placeholder="Search"
+				@d2l-input-search-searched=${this._handleSearch}
+			></d2l-input-search>
 		`;
 	}
 
