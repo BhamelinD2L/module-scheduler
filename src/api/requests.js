@@ -10,7 +10,28 @@ function filterUndefined(obj) {
 	}, {});
 }
 
+// This adds query parameters to a base url. This expects an object for the
+// query parameters. If the queryParams is null/undefined or an object with no
+// defined values, the base url is returned unchanged.
+function addQueryParamsToUrl(baseUrl, queryParams) {
+	if (!queryParams) return baseUrl;
+
+	const searchParams = new URLSearchParams(filterUndefined(queryParams));
+
+	if (!searchParams.toString()) return baseUrl;
+
+	return `${baseUrl}?${searchParams.toString()}`;
+}
+
 export class Requests {
+
+	static async deleteIgnoreListItems(scheduleId, courseOfferingIds = null) {
+		const queryParams = {
+			courseOfferingIds: courseOfferingIds ? courseOfferingIds.join() : undefined
+		};
+
+		await this._delete(Routes.IgnoreListDelete(scheduleId), queryParams);
+	}
 
 	static async deleteSchedule(scheduleId) {
 		await this._delete(Routes.DeleteSchedule(scheduleId));
@@ -66,9 +87,9 @@ export class Requests {
 			D2L.LP.Web.Authentication.Xsrf.GetXsrfToken() || '';
 	}
 
-	static _delete(url) {
+	static _delete(url, queryParams) {
 		const options = this._options('DELETE');
-		return this._fetch(url, options);
+		return this._fetch(addQueryParamsToUrl(url, queryParams), options);
 	}
 
 	static async _fetch(url, options) {
@@ -81,17 +102,12 @@ export class Requests {
 			});
 	}
 
-	static _get(baseUrl, queryParams) {
-		let url = baseUrl;
-
-		if (queryParams) {
-			const searchParams = new URLSearchParams(filterUndefined(queryParams));
-
-			if (searchParams.toString()) url = `${url}?${searchParams.toString()}`;
-		}
-
+	static _get(url, queryParams) {
 		const options = this._options('GET');
-		return this._fetch(url, options).then(r => r.json());
+		return this._fetch(
+			addQueryParamsToUrl(url, queryParams),
+			options
+		).then(r => r.json());
 	}
 
 	static _options(method) {
