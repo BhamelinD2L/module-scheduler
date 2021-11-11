@@ -25,6 +25,10 @@ function addQueryParamsToUrl(baseUrl, queryParams) {
 
 export class Requests {
 
+	static async addToIgnoreList(scheduleId, courseOfferingId) {
+		await this._put(Routes.IgnoreListAdd(scheduleId, courseOfferingId));
+	}
+
 	static async deleteIgnoreListItems(scheduleId, courseOfferingIds = null) {
 		const queryParams = {
 			courseOfferingIds: courseOfferingIds ? courseOfferingIds.join() : undefined

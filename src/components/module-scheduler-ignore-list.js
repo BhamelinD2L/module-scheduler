@@ -1,5 +1,7 @@
+import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/button/button.js';
 import '@brightspace-ui/core/components/button/button-subtle.js';
+import '@brightspace-ui/core/components/dialog/dialog.js';
 import '@brightspace-ui/core/components/dialog/dialog-confirm.js';
 import '@brightspace-ui/core/components/inputs/input-search.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox.js';
@@ -14,6 +16,8 @@ import { LocalizeMixin } from '../mixins/localize-mixin.js';
 import { renderSpinner } from '../helpers/spinner.js';
 import { ScheduleServiceFactory } from '../services/schedule-service-factory.js';
 import { tableStyles } from '@brightspace-ui/core/components/table/table-wrapper.js';
+
+const ADD_TO_IGNORE_LIST_DIALOG_ID = 'd2l-add-to-ignore-list-dialog';
 
 function toggleSetItem(srcSet, item) {
 	const newSet = new Set(srcSet);
@@ -54,6 +58,15 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			},
 			ignoreListItems: {
 				type: Array
+			},
+			_showAddToIgnoreListAlert: {
+				type: Boolean
+			},
+			_showAddToIgnoreListDialog: {
+				type: Boolean
+			},
+			_addToScheduleCourseOfferingId: {
+				type: String
 			},
 			_totalIgnoreListItems: {
 				type: Number,
@@ -111,12 +124,6 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					display: none;
 				}
 
-				.d2l-action-bar {
-					display: flex;
-					justify-content: space-between;
-					margin-bottom: 15px;
-				}
-
 				.d2l-checkbox-cell {
 					text-align: center !important;
 				}
@@ -128,6 +135,31 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					margin-top: 48px;
 					position: absolute;
 					transform: translateX(-50%);
+				}
+
+				.d2l-add-to-ignore-list-btn {
+					flex: 0;
+					margin-bottom: 10px;
+				}
+
+				.d2l-add-to-ignore-list-btn > d2l-icon {
+					color: inherit;
+					margin-right: 5px;
+				}
+
+				.d2l-dialog-footer {
+					display: flex;
+					height: 70px;
+				}
+
+				.d2l-add-to-ignore-list-dialog-btn {
+					margin: auto 20px auto 0;
+				}
+
+				.d2l-action-bar {
+					display: flex;
+					justify-content: space-between;
+					margin-bottom: 15px;
 				}
 
 				.d2l-search {
@@ -149,6 +181,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.scheduleId = null,
 		this.scheduleName = null;
 		this.ignoreListItems = [];
+		this._showAddToIgnoreListAlert = false;
+		this._showAddToIgnoreListDialog = false;
+		this._addToScheduleCourseOfferingId = '';
 		this._totalIgnoreListItems = null;
 		this._pageSize = 20;
 		this._pageNumber = 1;
@@ -166,6 +201,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		if (this.scheduleName === '') {
 			await this._fetchSchedule();
 		}
+		await this._fetchIgnoreList();
 	}
 
 	render() {
@@ -174,6 +210,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		}
 
 		return html`
+			${ this._renderAddToIgnoreListDialog() }
 			${this._renderRemoveAllConfirmDialog()}
 			${this._renderRemoveSelectedConfirmDialog()}
 			<d2l-button-subtle
@@ -209,6 +246,18 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		return this.ignoreListItems.every((item) => this._selectedItems.has(item.courseOfferingId));
 	}
 
+	async _add() {
+		try {
+			await this.scheduleService.addToIgnoreList(this.scheduleId, this._addToScheduleCourseOfferingId);
+			this._addToScheduleCourseOfferingId = '';
+			this._handleAddToIgnoreListDialogClose();
+		} catch (err) {
+			this._showAddToIgnoreListAlert = true;
+		} finally {
+			await this._fetchIgnoreList();
+		}
+	}
+
 	_clearSelectedItems() {
 		this._selectedItems = new Set();
 	}
@@ -240,6 +289,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		return () => {
 			this._selectedItems = toggleSetItem(this._selectedItems, item);
 		};
+	}
+
+	async _handleAddToIgnoreListDialogClose() {
+		this._showAddToIgnoreListDialog = false;
 	}
 
 	_handleBackToHome() {
@@ -283,6 +336,11 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		}
 	}
 
+	_handleCourseOfferingIdInput(e) {
+		this._addToScheduleCourseOfferingId = e.target.value;
+		this._showAddToIgnoreListAlert = false;
+	}
+
 	_handleItemsPerPageChange(e) {
 		this._pageSize = e.detail.itemCount;
 		this._pageNumber = 1;
@@ -315,9 +373,22 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._pageNumber = 1;
 	}
 
+	async _openAddToIgnoreListDialog() {
+		this._showAddToIgnoreListDialog = true;
+		await new Promise((r) => setTimeout(r, 0));
+		this.shadowRoot.getElementById('addToIgnoreListCourseOfferingId').focus();
+	}
+
 	_renderActionButtons() {
 		return html`
 			<div>
+				<d2l-button
+					primary
+					class="d2l-add-to-ignore-list-btn"
+					@click="${this._openAddToIgnoreListDialog}">
+					<d2l-icon icon="tier1:plus-large-thick"></d2l-icon>
+					${ this.localize('ignoreList:addToIgnoreListButton') }
+				</d2l-button>
 				<d2l-button-subtle
 					text=${this.localize('ignoreList:removeSelectedItems', { selectedCount: this._selectedItems.size })}
 					icon="tier1:delete"
@@ -331,6 +402,47 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					@click=${this._handleOpenRemoveAllConfirmDialog}
 				></d2l-button-subtle>
 			</div>
+		`;
+	}
+
+	_renderAddToIgnoreListDialog() {
+		return html`
+			<d2l-dialog
+				class="d2l-add-to-ignore-list-dialog"
+				title-text="${this.localize('ignoreList:addToIgnoreListDialogTitle')}"
+				@d2l-dialog-close="${this._handleAddToIgnoreListDialogClose}"
+				id="${ADD_TO_IGNORE_LIST_DIALOG_ID}"
+				?opened="${this._showAddToIgnoreListDialog}"
+				>
+				<div class="d2l-add-to-ignore-list-dialog-content">
+					<label for="addToIgnoreListCourseOfferingId">
+						${this.localize('ignoreList:addToIgnoreListCourseOfferingId')}
+					</label>
+					<d2l-input-text
+						autocomplete="off"
+						id="addToIgnoreListCourseOfferingId"
+						value="${this._addToScheduleCourseOfferingId || ''}"
+						@input=${this._handleCourseOfferingIdInput}
+						label=${this.localize('ignoreList:addToIgnoreListCourseOfferingId')}
+						label-hidden
+						>
+					</d2l-input-text>
+				</div>
+				<div slot="footer" class="d2l-dialog-footer">
+					<d2l-button
+						class="d2l-add-to-ignore-list-dialog-btn"
+						?disabled="${!this._addToScheduleCourseOfferingId}"
+						@click="${this._add}"
+						primary>
+						${this.localize('ignoreList:addToIgnoreListDialogBtn')}
+					</d2l-button>
+					<d2l-alert
+						type="warning"
+						?hidden="${!this._showAddToIgnoreListAlert}">
+						${this.localize('ignoreList:addToIgnoreListDialogAlert')}
+					</d2l-alert>
+				</div>
+			</d2l-dialog>
 		`;
 	}
 
@@ -428,11 +540,17 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					<th>${this.localize('ignoreList:completionStatus')}</th>
 				</thead>
 				<tbody>
-					${ this.ignoreListItems.map(item => this._renderIgnoreListItem(item)) }
+					${ this._isFetchingIgnoreList ? renderSpinner() : this._renderTableItems() }
 				</tbody>
 			</table>
 		</d2l-table-wrapper>
 		${this._renderPagination()}
+		`;
+	}
+
+	_renderTableItems() {
+		return html`
+			${ this.ignoreListItems.map(item => this._renderIgnoreListItem(item)) }
 		`;
 	}
 

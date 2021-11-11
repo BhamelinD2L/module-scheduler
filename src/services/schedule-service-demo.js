@@ -68,6 +68,17 @@ export class ScheduleServiceDemo {
 		}
 	];
 
+	static async addToIgnoreList(scheduleId, courseOfferingId) {
+		this.ignoreListItems.push({
+			'scheduleId': scheduleId,
+			'courseOfferingId': courseOfferingId,
+			'courseOfferingName': 'Math 1',
+			'courseOfferingCode': 'MATH_100_S001_SP22',
+			'lastDateApplied': '2021-07-01T19:57:39.290Z',
+			'lastCompletionStatusId': '2'
+		});
+	}
+
 	static async createSchedule() {}
 
 	static async deleteIgnoreListItems() {}
