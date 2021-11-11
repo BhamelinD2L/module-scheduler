@@ -375,6 +375,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	_handleSearch(e) {
 		this._searchText = e.detail.value;
 		this._pageNumber = 1;
+		this._clearSelectedItems();
 	}
 
 	async _openAddToIgnoreListDialog() {
