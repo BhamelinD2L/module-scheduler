@@ -44,5 +44,17 @@ export default {
 	"ignoreList:addToIgnoreListDialogTitle": "Add Course Offering to Ignore List",
 	"ignoreList:addToIgnoreListCourseOfferingId": "Course Offering Org Unit ID",
 	"ignoreList:addToIgnoreListDialogBtn": "Add",
-	"ignoreList:addToIgnoreListDialogAlert": "The Course Offering could not be added."
+	"ignoreList:addToIgnoreListDialogAlert": "The Course Offering could not be added.",
+	"ignoreList:selectPageLabel": "Select All in Page",
+	"ignoreList:selectItemLabel": "Select {courseOfferingName}",
+	"ignoreList:removeSelectedItems": "Remove Selected ({selectedCount})",
+	"ignoreList:removeAllItems": "Remove All Courses",
+	"ignoreList:removeAllConfirmDialog:title": "Remove All Courses",
+	"ignoreList:removeAllConfirmDialog:message": "Are you sure you want to remove all courses from the Ignore List?",
+	"ignoreList:removeAllConfirmDialog:confirmButton": "Yes",
+	"ignoreList:removeAllConfirmDialog:cancelButton": "No",
+	"ignoreList:removeSelectedConfirmDialog:title": "Remove Selected",
+	"ignoreList:removeSelectedConfirmDialog:message": "Are you sure you want to remove {selectedCount} from the Ignore List?",
+	"ignoreList:removeSelectedConfirmDialog:confirmButton": "Yes",
+	"ignoreList:removeSelectedConfirmDialog:cancelButton": "No"
 };

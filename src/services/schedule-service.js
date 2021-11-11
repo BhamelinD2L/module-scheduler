@@ -12,6 +12,10 @@ export class ScheduleService {
 		return;
 	}
 
+	static async deleteIgnoreListItems(scheduleId, courseOfferingIds = null) {
+		await Requests.deleteIgnoreListItems(scheduleId, courseOfferingIds);
+	}
+
 	static async deleteSchedule(scheduleId) {
 		await Requests.deleteSchedule(scheduleId);
 	}

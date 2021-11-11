@@ -1,7 +1,10 @@
 import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/button/button.js';
+import '@brightspace-ui/core/components/button/button-subtle.js';
 import '@brightspace-ui/core/components/dialog/dialog.js';
+import '@brightspace-ui/core/components/dialog/dialog-confirm.js';
 import '@brightspace-ui/core/components/inputs/input-search.js';
+import '@brightspace-ui/core/components/inputs/input-checkbox.js';
 import '@brightspace-ui-labs/pagination/pagination.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { AppRoutes } from '../helpers/app-routes.js';
@@ -15,6 +18,34 @@ import { ScheduleServiceFactory } from '../services/schedule-service-factory.js'
 import { tableStyles } from '@brightspace-ui/core/components/table/table-wrapper.js';
 
 const ADD_TO_IGNORE_LIST_DIALOG_ID = 'd2l-add-to-ignore-list-dialog';
+
+function toggleSetItem(srcSet, item) {
+	const newSet = new Set(srcSet);
+
+	if (newSet.has(item)) {
+		newSet.delete(item);
+	} else {
+		newSet.add(item);
+	}
+
+	return newSet;
+}
+
+function addSetItems(srcSet, items = []) {
+	const newSet = new Set(srcSet);
+
+	items.forEach((item) => newSet.add(item));
+
+	return newSet;
+}
+
+function deleteSetItems(srcSet, items = []) {
+	const newSet = new Set(srcSet);
+
+	items.forEach((item) => newSet.delete(item));
+
+	return newSet;
+}
 
 class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	static get properties() {
@@ -60,6 +91,22 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			_searchText: {
 				type: String,
 				attribute: false
+			},
+			_selectedItems: {
+				type: Set,
+				attribute: false
+			},
+			_removeSelectedConfirmDialogOpened: {
+				type: Boolean,
+				attribute: false
+			},
+			_removeAllConfirmDialogOpened: {
+				type: Boolean,
+				attribute: false
+			},
+			_isDeletingItems: {
+				type: Boolean,
+				attribute: false
 			}
 		};
 	}
@@ -75,6 +122,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 				:host([hidden]) {
 					display: none;
+				}
+
+				.d2l-checkbox-cell {
+					text-align: center !important;
 				}
 
 				.d2l-spinner {
@@ -111,8 +162,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					margin-bottom: 15px;
 				}
 
+				.d2l-action-buttons {
+					flex: 3 1 0;
+				}
+
 				.d2l-search {
-					flex: 0.45 1 0;
+					flex: 1 1 0;
 				}
 
 				.d2l-ignore-list-title {
@@ -139,6 +194,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._searchText = '';
 		this._isFetchingIgnoreList = false;
 		this._isFetchingSchedule = false;
+		this._selectedItems = new Set();
+		this._removeSelectedConfirmDialogOpened = false;
+		this._removeAllConfirmDialogOpened = false;
 	}
 
 	async connectedCallback() {
@@ -157,6 +215,8 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 		return html`
 			${ this._renderAddToIgnoreListDialog() }
+			${this._renderRemoveAllConfirmDialog()}
+			${this._renderRemoveSelectedConfirmDialog()}
 			<d2l-button-subtle
 				@click="${this._handleBackToHome}"
 				icon="tier3:chevron-left"
@@ -168,7 +228,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				${this._renderActionButtons()}
 				${this._renderSearch()}
 			</div>
-			${this._isFetchingIgnoreList ? renderSpinner() : this._renderTable()}
+			${this._isTableLoading ? renderSpinner() : this._renderTable()}
 		`;
 	}
 
@@ -182,6 +242,14 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		}
 	}
 
+	get _isTableLoading() {
+		return this._isFetchingIgnoreList || this._isDeletingItems;
+	}
+
+	get _pageItemsSelected() {
+		return this.ignoreListItems.every((item) => this._selectedItems.has(item.courseOfferingId));
+	}
+
 	async _add() {
 		try {
 			await this.scheduleService.addToIgnoreList(this.scheduleId, this._addToScheduleCourseOfferingId);
@@ -192,6 +260,10 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		} finally {
 			await this._fetchIgnoreList();
 		}
+	}
+
+	_clearSelectedItems() {
+		this._selectedItems = new Set();
 	}
 
 	async _fetchIgnoreList() {
@@ -217,12 +289,55 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._isFetchingSchedule = false;
 	}
 
+	_genItemSelectHandler(item) {
+		return () => {
+			this._selectedItems = toggleSetItem(this._selectedItems, item);
+		};
+	}
+
 	async _handleAddToIgnoreListDialogClose() {
 		this._showAddToIgnoreListDialog = false;
 	}
 
 	_handleBackToHome() {
 		this.navigateTo(AppRoutes.Home());
+	}
+
+	async _handleCloseRemoveAllConfirmDialog(e) {
+		this._removeAllConfirmDialogOpened = false;
+
+		if (e.detail.action !== 'yes') return;
+
+		this._clearSelectedItems();
+
+		this._isDeletingItems = true;
+		await this.scheduleService.deleteIgnoreListItems(this.scheduleId);
+		this._isDeletingItems = false;
+
+		if (this._pageNumber !== 1) {
+			this._pageNumber = 1;
+		} else {
+			this._fetchIgnoreList();
+		}
+	}
+
+	async _handleCloseRemoveSelectedConfirmDialog(e) {
+		this._removeSelectedConfirmDialogOpened = false;
+
+		if (e.detail.action !== 'yes') return;
+
+		const itemsToDelete = Array.from(this._selectedItems);
+		this._clearSelectedItems();
+
+		this._isDeletingItems = true;
+		await this.scheduleService.deleteIgnoreListItems(this.scheduleId, itemsToDelete);
+		this._isDeletingItems = false;
+
+		if (this._pageNumber !== 1) {
+			this._pageNumber = 1;
+		} else {
+			this._fetchIgnoreList();
+		}
 	}
 
 	_handleCourseOfferingIdInput(e) {
@@ -235,13 +350,32 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._pageNumber = 1;
 	}
 
+	_handleOpenRemoveAllConfirmDialog() {
+		this._removeAllConfirmDialogOpened = true;
+	}
+
+	_handleOpenRemoveSelectedConfirmDialog() {
+		this._removeSelectedConfirmDialogOpened = true;
+	}
+
 	_handlePageChange(e) {
 		this._pageNumber = e.detail.page;
+	}
+
+	_handlePageSelect() {
+		const pageItemIds = this.ignoreListItems.map(({ courseOfferingId }) => courseOfferingId);
+
+		if (this._pageItemsSelected) {
+			this._selectedItems = deleteSetItems(this._selectedItems, pageItemIds);
+		} else {
+			this._selectedItems = addSetItems(this._selectedItems, pageItemIds);
+		}
 	}
 
 	_handleSearch(e) {
 		this._searchText = e.detail.value.trim();
 		this._pageNumber = 1;
+		this._clearSelectedItems();
 	}
 
 	async _openAddToIgnoreListDialog() {
@@ -252,7 +386,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	_renderActionButtons() {
 		return html`
-			<div>
+			<div class="d2l-action-buttons">
 				<d2l-button
 					primary
 					class="d2l-add-to-ignore-list-btn"
@@ -260,6 +394,18 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					<d2l-icon icon="tier1:plus-large-thick"></d2l-icon>
 					${ this.localize('ignoreList:addToIgnoreListButton') }
 				</d2l-button>
+				<d2l-button-subtle
+					text=${this.localize('ignoreList:removeSelectedItems', { selectedCount: this._selectedItems.size })}
+					icon="tier1:delete"
+					?disabled=${this._isTableLoading || !this._selectedItems.size}
+					@click=${this._handleOpenRemoveSelectedConfirmDialog}
+				></d2l-button-subtle>
+				<d2l-button-subtle
+					text=${this.localize('ignoreList:removeAllItems')}
+					icon="tier1:delete"
+					?disabled=${this._isTableLoading || !this.ignoreListItems.length}
+					@click=${this._handleOpenRemoveAllConfirmDialog}
+				></d2l-button-subtle>
 			</div>
 		`;
 	}
@@ -308,6 +454,13 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	_renderIgnoreListItem(item) {
 		return html`
 		<tr>
+			<td class="d2l-checkbox-cell">
+				<d2l-input-checkbox
+					aria-label="${this.localize('ignoreList:selectItemLabel', { courseOfferingName: item.courseOfferingName })}"
+					?checked=${this._selectedItems.has(item.courseOfferingId)}
+					@change=${this._genItemSelectHandler(item.courseOfferingId)}
+				></d2l-input-checkbox>
+			</td>
 			<td>${item.courseOfferingName}</td>
 			<td>${item.courseOfferingCode}</td>
 			<td>${item.lastDateApplied ? getDateFromISODateTime(item.lastDateApplied).toLocaleString() : ''}</td>
@@ -335,6 +488,34 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		`;
 	}
 
+	_renderRemoveAllConfirmDialog() {
+		return html`
+			<d2l-dialog-confirm
+				title-text="${this.localize('ignoreList:removeAllConfirmDialog:title')}"
+				text="${this.localize('ignoreList:removeAllConfirmDialog:message', { selectedCount: this._selectedItems.size })}"
+				?opened=${this._removeAllConfirmDialogOpened}
+				@d2l-dialog-close=${this._handleCloseRemoveAllConfirmDialog}
+			>
+				<d2l-button slot="footer" primary data-dialog-action="yes">${this.localize('ignoreList:removeAllConfirmDialog:confirmButton')}</d2l-button>
+				<d2l-button slot="footer" data-dialog-action>${this.localize('ignoreList:removeAllConfirmDialog:cancelButton')}</d2l-button>
+			</d2l-dialog-confirm>
+		`;
+	}
+
+	_renderRemoveSelectedConfirmDialog() {
+		return html`
+			<d2l-dialog-confirm
+				title-text="${this.localize('ignoreList:removeSelectedConfirmDialog:title')}"
+				text="${this.localize('ignoreList:removeSelectedConfirmDialog:message', { selectedCount: this._selectedItems.size })}"
+				?opened=${this._removeSelectedConfirmDialogOpened}
+				@d2l-dialog-close=${this._handleCloseRemoveSelectedConfirmDialog}
+			>
+				<d2l-button slot="footer" primary data-dialog-action="yes">${this.localize('ignoreList:removeSelectedConfirmDialog:confirmButton')}</d2l-button>
+				<d2l-button slot="footer" data-dialog-action>${this.localize('ignoreList:removeSelectedConfirmDialog:cancelButton')}</d2l-button>
+			</d2l-dialog-confirm>
+		`;
+	}
+
 	_renderSearch() {
 		return html`
 			<d2l-input-search
@@ -351,6 +532,13 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		<d2l-table-wrapper sticky-headers>
 			<table class="d2l-table">
 				<thead>
+					<th class="d2l-checkbox-cell">
+						<d2l-input-checkbox
+							aria-label="${this.localize('ignoreList:selectPageLabel')}"
+							?checked=${this._pageItemsSelected}
+							@change=${this._handlePageSelect}
+						></d2l-input-checkbox>
+					</th>
 					<th>${this.localize('ignoreList:courseOfferingName')}</th>
 					<th>${this.localize('ignoreList:courseOfferingCode')}</th>
 					<th>${this.localize('tableHeader:lastDateApplied')}</th>
