@@ -162,8 +162,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					margin-bottom: 15px;
 				}
 
+				.d2l-action-buttons {
+					flex: 3 1 0;
+				}
+
 				.d2l-search {
-					flex: 0.45 1 0;
+					flex: 1 1 0;
 				}
 
 				.d2l-ignore-list-title {
@@ -381,7 +385,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 
 	_renderActionButtons() {
 		return html`
-			<div>
+			<div class="d2l-action-buttons">
 				<d2l-button
 					primary
 					class="d2l-add-to-ignore-list-btn"
