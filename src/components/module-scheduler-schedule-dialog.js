@@ -1,3 +1,4 @@
+import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/dialog/dialog.js';
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui/core/components/inputs/input-textarea';
@@ -43,6 +44,15 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			},
 			_readyToShowDialog: {
 				type: Boolean
+			},
+			_missingSubjectOrSessionField: {
+				type: Boolean
+			},
+			_invalidSubjectField: {
+				type: Boolean
+			},
+			_invalidJsonField: {
+				type: Boolean
 			}
 		};
 	}
@@ -62,6 +72,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				}
 				d2l-input-text {
 					margin-bottom: 18px;
+				}
+				.d2l-invalid-form-alert {
+					margin-bottom: 5px;
 				}
 			`
 		];
@@ -111,17 +124,21 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				id="${DIALOG_ID}">
 				<div class="d2l-schedule-dialog-content">${this.renderForm()}</div>
 				<div slot="footer" class="d2l-dialog-footer">
-					<span class="d2l-dialog-footer-left">
-						<d2l-button
-							?disabled="${this.saving}"
-							@click="${this.saveForm}"
-							primary>
-							${this.localize('button:save')}
-						</d2l-button>
-						<d2l-button @click="${this.handleCancel}">
-							${this.localize('button:cancel')}
-						</d2l-button>
-					</span>
+					<d2l-alert
+						class="d2l-invalid-form-alert"
+						type="warning"
+						?hidden="${!this._invalidJsonField}">
+						${this._invalidFormAlertMessage}
+					</d2l-alert>
+					<d2l-button
+						?disabled="${this.saving}"
+						@click="${this.saveForm}"
+						primary>
+						${this.localize('button:save')}
+					</d2l-button>
+					<d2l-button @click="${this.handleCancel}">
+						${this.localize('button:cancel')}
+					</d2l-button>
 				</div>
 			</d2l-dialog>
 		`;
@@ -141,6 +158,10 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		this.sessionCode = '';
 		this.subjectCode = '';
 		this.moduleIgnoreList = '';
+		this._missingSubjectOrSessionField = false;
+		this._invalidSubjectField = false;
+		this._invalidJsonField = false;
+		this._invalidFormAlertMessage = '';
 	}
 
 	closeDialog(closeActionType = CANCEL_ACTION) {
@@ -185,8 +206,27 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	}
 
 	isValidForm() {
-		// TODO: front-end validation here
-		return true;
+		// Check required fields
+		let missingNameOrJson = false;
+		if (!(this.scheduleName && this.scheduleJson)) {
+			missingNameOrJson = true;
+		}
+
+		if (!(this.sessionCode || this.subjectCode)) {
+			this._missingSubjectOrSessionField = true;
+		}
+
+		// Check alphanumeric comma separated value format
+		const subjectCsvPattern = '^[a-zA-Z0-9]+(,[a-zA-Z0-9]+)*$';
+		if (this.subjectCode) {
+			// Remove all whitespaces
+			this.subjectCode = this.subjectCode.split(' ').join('');
+			if (!this.subjectCode.match(subjectCsvPattern)) {
+				this._invalidSubjectField = true;
+			}
+		}
+
+		return !(missingNameOrJson || this._missingSubjectOrSessionField || this._invalidSubjectField);
 	}
 
 	renderForm() {
@@ -208,7 +248,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				class="d2l-input-select"
 				id="semesterId"
 				@change=${this._handleSemesterIdChange}>
-				${this.semesters.map((option) => this.renderSelectOptions(option, this.semesterId))}
+				${this.semesters.map((option) => this._renderSelectOptions(option, this.semesterId))}
 			</select>
 
             <label for="subjectCode" class="d2l-label-text">${this.localize('scheduleDialog:subject')}</label>
@@ -218,8 +258,10 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				value="${this.subjectCode || ''}"
 				@change=${this._handleSubjectCodeChange}
 				label=${this.localize('scheduleDialog:subject')}
-				label-hidden>
+				label-hidden
+				aria-invalid="${this._missingSubjectOrSessionField || this._invalidSubjectField}">
 			</d2l-input-text>
+			${this._renderSubjectErrorTooltip()}
 
             <label for="sessionCode" class="d2l-label-text">${this.localize('scheduleDialog:session')}</label>
 			<d2l-input-text
@@ -228,8 +270,10 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				value="${this.sessionCode || ''}"
 				@change=${this._handleSessionCodeChange}
 				label=${this.localize('scheduleDialog:session')}
-				label-hidden>
+				label-hidden
+				aria-invalid="${this._missingSubjectOrSessionField}">
 			</d2l-input-text>
+			${this._renderSessionErrorTooltip()}
 
 			<label for="moduleIgnoreList" class="d2l-label-text">${this.localize('scheduleDialog:moduleIgnoreList')}</label>
 			<d2l-input-text
@@ -250,20 +294,11 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				@change=${this._handleScheduleJsonChange}
 				placeholder=${JSON_PLACEHOLDER}
 				label=${this.localize('scheduleDialog:deliveryBlocks')}
-				label-hidden>
+				label-hidden
+				aria-invalid="${this._invalidJsonField}">
 			</d2l-input-textarea>
+			${this._renderJsonErrorTooltip()}
         `;
-	}
-
-	renderSelectOptions(option, selectedOption) {
-		return html`
-			<option
-				value="${option.Identifier}"
-				?selected=${selectedOption === option.Identifier}
-				>
-				${option.Name}
-			</option>
-		`;
 	}
 
 	async saveForm() {
@@ -291,7 +326,8 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			}
 			this.closeDialog(SAVE_ACTION);
 		} catch (err) {
-			// TODO: handle errors
+			this._invalidFormAlertMessage = this.localize('scheduleDialog:jsonInvalidAlert');
+			this._invalidJsonField = true;
 		} finally {
 			this.saving = false; // Always re-enable save button to try again
 		}
@@ -302,6 +338,8 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	}
 
 	_handleScheduleJsonChange(e) {
+		this._invalidJsonField = false;
+		this._invalidFormAlertMessage = '';
 		this.scheduleJson = e.target.value;
 	}
 
@@ -314,11 +352,62 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	}
 
 	_handleSessionCodeChange(e) {
+		this._missingSubjectOrSessionField = false;
 		this.sessionCode = e.target.value;
 	}
 
 	_handleSubjectCodeChange(e) {
+		this._missingSubjectOrSessionField = false;
+		this._invalidSubjectField = false;
 		this.subjectCode = e.target.value;
+	}
+
+	_renderJsonErrorTooltip() {
+		if (this._invalidJsonField) {
+			return html`
+			<d2l-tooltip for="scheduleJson" state="error" align="start" offset="10">
+				${this.localize('scheduleDialog:jsonInvalid')}
+			</d2l-tooltip>
+			`;
+		}
+	}
+
+	_renderSelectOptions(option, selectedOption) {
+		return html`
+			<option
+				value="${option.Identifier}"
+				?selected=${selectedOption === option.Identifier}
+				>
+				${option.Name}
+			</option>
+		`;
+	}
+
+	_renderSessionErrorTooltip() {
+		if (this._missingSubjectOrSessionField) {
+			return html`
+			<d2l-tooltip for="sessionCode" state="error" align="start" offset="10">
+				${this.localize('scheduleDialog:subjectOrSessionMissing')}	
+			</d2l-tooltip>
+			`;
+		}
+	}
+
+	_renderSubjectErrorTooltip() {
+		if (this._missingSubjectOrSessionField) {
+			return html`
+			<d2l-tooltip for="subjectCode" state="error" align="start" offset="10">
+				${this.localize('scheduleDialog:subjectOrSessionMissing')}
+			</d2l-tooltip>
+			`;
+		}
+		if (this._invalidSubjectField) {
+			return html`
+			<d2l-tooltip for="subjectCode" state="error" align="start" offset="10">
+				${this.localize('scheduleDialog:subjectInvalid')}
+			</d2l-tooltip>
+			`;
+		}
 	}
 }
 
