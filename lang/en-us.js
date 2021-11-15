@@ -54,7 +54,7 @@ export default {
 	"ignoreList:removeAllConfirmDialog:confirmButton": "Yes",
 	"ignoreList:removeAllConfirmDialog:cancelButton": "No",
 	"ignoreList:removeSelectedConfirmDialog:title": "Remove Selected",
-	"ignoreList:removeSelectedConfirmDialog:message": "Are you sure you want to remove {selectedCount} from the Ignore List?",
+	"ignoreList:removeSelectedConfirmDialog:message": "Are you sure you want to remove {selectedCount} course(s) from the Ignore List?",
 	"ignoreList:removeSelectedConfirmDialog:confirmButton": "Yes",
 	"ignoreList:removeSelectedConfirmDialog:cancelButton": "No"
 };
