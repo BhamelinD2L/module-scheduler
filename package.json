@@ -34,7 +34,7 @@
     "lit-analyzer": "^1",
     "mocha": "^8",
     "puppeteer": "^10.1.0",
-    "stylelint": "^13"
+    "stylelint": "^14"
   },
   "dependencies": {
     "@brightspace-ui-labs/multi-select": "^4.2.4",
