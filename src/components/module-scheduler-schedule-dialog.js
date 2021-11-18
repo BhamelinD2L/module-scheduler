@@ -2,6 +2,8 @@ import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/dialog/dialog.js';
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui/core/components/inputs/input-textarea';
+import '@brightspace-ui-labs/multi-select/multi-select-list.js';
+import '@brightspace-ui-labs/multi-select/multi-select-list-item.js';
 import { CANCEL_ACTION, SAVE_ACTION } from '../constants.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { labelStyles } from '@brightspace-ui/core/components/typography/styles.js';
@@ -34,7 +36,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				type: String
 			},
 			moduleIgnoreList: {
-				type: String
+				type: Array
 			},
 			semesters: {
 				type: Array
@@ -75,6 +77,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				}
 				.d2l-invalid-form-alert {
 					margin-bottom: 5px;
+				}
+				.d2l-ignore-list {
+					margin-bottom: 15px;
 				}
 			`
 		];
@@ -157,7 +162,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		this.semesterId = null;
 		this.sessionCode = '';
 		this.subjectCode = '';
-		this.moduleIgnoreList = '';
+		this.moduleIgnoreList = [];
 		this._missingSubjectOrSessionField = false;
 		this._invalidSubjectField = false;
 		this._invalidJsonField = false;
@@ -179,7 +184,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			this.semesterId = String(body.courseOfferingSemesterId);
 			this.sessionCode = body.courseOfferingSessionCodeFilter;
 			this.subjectCode = body.courseOfferingSubjectCodeFilter.join();
-			this.moduleIgnoreList = body.moduleNameIgnoreList.join();
+			this.moduleIgnoreList = body.moduleNameIgnoreList;
 		});
 	}
 
@@ -276,13 +281,14 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			${this._renderSessionErrorTooltip()}
 
 			<label for="moduleIgnoreList" class="d2l-label-text">${this.localize('scheduleDialog:moduleIgnoreList')}</label>
+			${this._renderModuleIgnoreList()}
 			<d2l-input-text
-				autocomplete="off"
+				slot="input"
 				id="moduleIgnoreList"
-				value="${this.moduleIgnoreList || ''}"
-				@change=${this._handleModuleIgnoreListChange}
 				label=${this.localize('scheduleDialog:moduleIgnoreList')}
-				label-hidden>
+				label-hidden
+				placeholder="Press enter to add"
+				@keypress=${this._onModuleIgnoreListKeyPress}>
 			</d2l-input-text>
 
             <label for="scheduleJson" class="d2l-label-text">${this.localize('scheduleDialog:deliveryBlocks')}</label>
@@ -313,7 +319,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			courseOfferingSemesterId: this.semesterId,
 			courseOfferingSessionCodeFilter: this.sessionCode,
 			courseOfferingSubjectCodeFilter: this.subjectCode.split(','),
-			moduleNameIgnoreList: this.moduleIgnoreList.split(','),
+			moduleNameIgnoreList: this.moduleIgnoreList,
 			scheduleJson: this.scheduleJson
 		};
 
@@ -331,10 +337,6 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		} finally {
 			this.saving = false; // Always re-enable save button to try again
 		}
-	}
-
-	_handleModuleIgnoreListChange(e) {
-		this.moduleIgnoreList = e.target.value;
 	}
 
 	_handleScheduleJsonChange(e) {
@@ -362,6 +364,20 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		this.subjectCode = e.target.value;
 	}
 
+	_onModuleIgnoreListKeyPress(e) {
+		// 'Enter' key
+		if (e.keyCode === 13 && e.target.value) {
+			this.moduleIgnoreList.push(e.target.value);
+			e.target.value = '';
+			this.requestUpdate();
+		}
+	}
+
+	_removeModuleIgnoreString(e) {
+		this.moduleIgnoreList.splice(e.target.getAttribute('index'), 1);
+		this.requestUpdate();
+	}
+
 	_renderJsonErrorTooltip() {
 		if (this._invalidJsonField) {
 			return html`
@@ -370,6 +386,22 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			</d2l-tooltip>
 			`;
 		}
+	}
+
+	_renderModuleIgnoreList() {
+		return html`
+			<d2l-labs-multi-select-list collapsable>
+				${this.moduleIgnoreList.map((ignoreString, index) => html`
+					<d2l-labs-multi-select-list-item
+						text="${ignoreString}"
+						index="${index}"
+						deletable
+						@d2l-labs-multi-select-list-item-deleted="${this._removeModuleIgnoreString}"
+					>
+					</d2l-labs-multi-select-list-item>
+				`)}
+			</d2l-labs-multi-select-list>
+		`;
 	}
 
 	_renderSelectOptions(option, selectedOption) {
