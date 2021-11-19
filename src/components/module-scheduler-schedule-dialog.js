@@ -191,11 +191,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	}
 
 	async fetchSemesters() {
-		this.semesters = await this.scheduleService.getSemesters().then((semesters) => {
-			return semesters.sort((a, b) => {
-				return parseInt(b.Identifier) - parseInt(a.Identifier);
-			});
-		});
+		this.semesters = (await this.scheduleService.getSemesters()).sort((a, b) =>
+			parseInt(b.Identifier) - parseInt(a.Identifier)
+		);
 	}
 
 	async finishClosingDialog(type) {
