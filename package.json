@@ -37,10 +37,11 @@
     "stylelint": "^13"
   },
   "dependencies": {
+    "@brightspace-ui-labs/multi-select": "^4.2.4",
     "@brightspace-ui-labs/pagination": "^1.0.5",
     "@brightspace-ui/core": "^1",
     "lit-element": "^2.5.1",
     "page": "^1.11.6"
   },
-  "version": "1.0.26"
+  "version": "1.0.28"
 }

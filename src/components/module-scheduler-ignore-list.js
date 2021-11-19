@@ -5,6 +5,7 @@ import '@brightspace-ui/core/components/dialog/dialog.js';
 import '@brightspace-ui/core/components/dialog/dialog-confirm.js';
 import '@brightspace-ui/core/components/inputs/input-search.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox.js';
+import '@brightspace-ui/core/components/table/table-col-sort-button';
 import '@brightspace-ui-labs/pagination/pagination.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { AppRoutes } from '../helpers/app-routes.js';
@@ -107,6 +108,14 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			_isDeletingItems: {
 				type: Boolean,
 				attribute: false
+			},
+			_sortField: {
+				type: String,
+				attribute: false
+			},
+			_sortIsDesc: {
+				type: Boolean,
+				attribute: false
 			}
 		};
 	}
@@ -197,6 +206,8 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._selectedItems = new Set();
 		this._removeSelectedConfirmDialogOpened = false;
 		this._removeAllConfirmDialogOpened = false;
+		this._sortField = 'courseOfferingName';
+		this._sortIsDesc = false;
 	}
 
 	async connectedCallback() {
@@ -378,6 +389,17 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._clearSelectedItems();
 	}
 
+	_handleSort(e) {
+		const field = e.target.id;
+
+		if (this._sortField === field) {
+			this._sortIsDesc = !this._sortIsDesc;
+		} else {
+			this._sortIsDesc = false;
+		}
+		this._sortField = field;
+	}
+
 	async _openAddToIgnoreListDialog() {
 		this._showAddToIgnoreListDialog = true;
 		await new Promise((r) => setTimeout(r, 0));
@@ -528,6 +550,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	_renderTable() {
+		this._sort();
 		return html`
 		<d2l-table-wrapper sticky-headers>
 			<table class="d2l-table">
@@ -539,10 +562,42 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 							@change=${this._handlePageSelect}
 						></d2l-input-checkbox>
 					</th>
-					<th>${this.localize('ignoreList:courseOfferingName')}</th>
-					<th>${this.localize('ignoreList:courseOfferingCode')}</th>
-					<th>${this.localize('tableHeader:lastDateApplied')}</th>
-					<th>${this.localize('ignoreList:completionStatus')}</th>
+					<th>
+						<d2l-table-col-sort-button
+							id="courseOfferingName"
+							@click=${this._handleSort}
+							?nosort=${this._sortField !== 'courseOfferingName'}
+							?desc=${this._sortIsDesc}>
+						${this.localize('ignoreList:courseOfferingName')}
+						</d2l-table-col-sort-button>
+					</th>
+					<th>
+						<d2l-table-col-sort-button
+							id="courseOfferingCode"
+							@click=${this._handleSort}
+							?nosort=${this._sortField !== 'courseOfferingCode'}
+							?desc=${this._sortIsDesc}>
+						${this.localize('ignoreList:courseOfferingCode')}
+						</d2l-table-col-sort-button>
+					</th>
+					<th>
+						<d2l-table-col-sort-button
+							id="lastDateApplied"
+							@click=${this._handleSort}
+							?nosort=${this._sortField !== 'lastDateApplied'}
+							?desc=${this._sortIsDesc}>
+						${this.localize('tableHeader:lastDateApplied')}
+						</d2l-table-col-sort-button>
+					</th>
+					<th>
+						<d2l-table-col-sort-button
+							id="completionStatus"
+							@click=${this._handleSort}
+							?nosort=${this._sortField !== 'completionStatus'}
+							?desc=${this._sortIsDesc}>
+						${this.localize('ignoreList:completionStatus')}
+						</d2l-table-col-sort-button>
+					</th>
 				</thead>
 				<tbody>
 					${ this._isFetchingIgnoreList ? renderSpinner() : this._renderTableItems() }
@@ -557,6 +612,26 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		return html`
 			${ this.ignoreListItems.map(item => this._renderIgnoreListItem(item)) }
 		`;
+	}
+
+	_sort() {
+		if (this._sortField === 'completionStatus') {
+			return this.ignoreListItems.sort((a, b) => {
+				a = completionStatusIdConverter.convertIdToText(a.lastCompletionStatusId);
+				b = completionStatusIdConverter.convertIdToText(b.lastCompletionStatusId);
+				if (this._sortIsDesc) {
+					return b.localeCompare(a);
+				}
+				return a.localeCompare(b);
+			});
+		}
+
+		return this.ignoreListItems.sort((a, b) => {
+			if (this._sortIsDesc) {
+				return b[this._sortField].localeCompare(a[this._sortField]);
+			}
+			return a[this._sortField].localeCompare(b[this._sortField]);
+		});
 	}
 
 }
