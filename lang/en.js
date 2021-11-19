@@ -26,6 +26,8 @@ export default {
 	"scheduleDialog:jsonInvalidAlert": "Please check your JSON and try again.",
 	"scheduleDialog:subjectInvalid": "Subject Code must be a comma separated value.",
 	"scheduleDialog:subjectOrSessionMissing": "Subject Code or Catalog & Section Number is required.",
+	"scheduleDialog:semesterMissing": "Semester is required.",
+	"scheduleDialog:selectSemester": "Select a Semester",
 	"button:save": "Save",
 	"button:cancel": "Cancel",
 	"warningDialog:title": "Confirmation",

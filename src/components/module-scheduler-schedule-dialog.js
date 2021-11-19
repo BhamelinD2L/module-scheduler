@@ -50,6 +50,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			_missingSubjectOrSessionField: {
 				type: Boolean
 			},
+			_missingSemester: {
+				type: Boolean
+			},
 			_invalidSubjectField: {
 				type: Boolean
 			},
@@ -100,12 +103,10 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	async connectedCallback() {
 		super.connectedCallback();
 
-		this.semesters = await this.scheduleService.getSemesters();
+		await this.fetchSemesters();
 
 		if (this.scheduleId) {
 			await this.fetchSchedule();
-		} else {
-			this.semesterId = this.semesters[0]?.Identifier;
 		}
 	}
 
@@ -164,6 +165,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 		this.subjectCode = '';
 		this.moduleIgnoreList = [];
 		this._missingSubjectOrSessionField = false;
+		this._missingSemester = false;
 		this._invalidSubjectField = false;
 		this._invalidJsonField = false;
 		this._invalidFormAlertMessage = '';
@@ -186,6 +188,12 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			this.subjectCode = body.courseOfferingSubjectCodeFilter.join();
 			this.moduleIgnoreList = body.moduleNameIgnoreList;
 		});
+	}
+
+	async fetchSemesters() {
+		this.semesters = (await this.scheduleService.getSemesters()).sort((a, b) =>
+			parseInt(b.Identifier) - parseInt(a.Identifier)
+		);
 	}
 
 	async finishClosingDialog(type) {
@@ -221,6 +229,10 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			this._missingSubjectOrSessionField = true;
 		}
 
+		if (!this.semesterId) {
+			this._missingSemester = true;
+		}
+
 		// Check alphanumeric comma separated value format
 		const subjectCsvPattern = '^[a-zA-Z0-9]+(,[a-zA-Z0-9]+)*$';
 		if (this.subjectCode) {
@@ -231,7 +243,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			}
 		}
 
-		return !(missingNameOrJson || this._missingSubjectOrSessionField || this._invalidSubjectField);
+		return !(missingNameOrJson || this._missingSubjectOrSessionField || this._invalidSubjectField || this._missingSemester);
 	}
 
 	renderForm() {
@@ -252,9 +264,13 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				aria-label=${this.localize('scheduleDialog:chooseSemester')}
 				class="d2l-input-select"
 				id="semesterId"
-				@change=${this._handleSemesterIdChange}>
+				required
+				@change=${this._handleSemesterIdChange}
+				aria-invalid="${this._missingSemester}">
+				<option value="" disabled selected>${this.localize('scheduleDialog:selectSemester')}</option>
 				${this.semesters.map((option) => this._renderSelectOptions(option, this.semesterId))}
 			</select>
+			${this._renderSemesterErrorToolTip()}
 
             <label for="subjectCode" class="d2l-label-text">${this.localize('scheduleDialog:subject')}</label>
 			<d2l-input-text
@@ -351,6 +367,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 
 	_handleSemesterIdChange(e) {
 		this.semesterId = e.target.value;
+		this._missingSemester = false;
 	}
 
 	_handleSessionCodeChange(e) {
@@ -413,6 +430,16 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 				${option.Name}
 			</option>
 		`;
+	}
+
+	_renderSemesterErrorToolTip() {
+		if (this._missingSemester) {
+			return html`
+			<d2l-tooltip for="semesterId" state="error" align="start" offset="10">
+				${this.localize('scheduleDialog:semesterMissing')}
+			</d2l-tooltip>
+			`;
+		}
 	}
 
 	_renderSessionErrorTooltip() {
