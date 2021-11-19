@@ -103,9 +103,7 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 	async connectedCallback() {
 		super.connectedCallback();
 
-		this.semesters = await this.scheduleService.getSemesters();
-
-		this._sortSemestersByIdentifierDesc();
+		await this.fetchSemesters();
 
 		if (this.scheduleId) {
 			await this.fetchSchedule();
@@ -189,6 +187,14 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			this.sessionCode = body.courseOfferingSessionCodeFilter;
 			this.subjectCode = body.courseOfferingSubjectCodeFilter.join();
 			this.moduleIgnoreList = body.moduleNameIgnoreList;
+		});
+	}
+
+	async fetchSemesters() {
+		this.semesters = await this.scheduleService.getSemesters().then((semesters) => {
+			return semesters.sort((a, b) => {
+				return parseInt(b.Identifier) - parseInt(a.Identifier);
+			});
 		});
 	}
 
@@ -463,12 +469,6 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 			</d2l-tooltip>
 			`;
 		}
-	}
-
-	_sortSemestersByIdentifierDesc() {
-		this.semesters = this.semesters.sort((a, b) => {
-			return parseInt(b.Identifier) - parseInt(a.Identifier);
-		});
 	}
 }
 
