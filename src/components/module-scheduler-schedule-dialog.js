@@ -383,8 +383,9 @@ class ScheduleDialog extends LocalizeMixin(LitElement) {
 
 	_onModuleIgnoreListKeyPress(e) {
 		// 'Enter' key
-		if (e.keyCode === 13 && e.target.value) {
-			this.moduleIgnoreList.push(e.target.value);
+		const value = e.target.value.trim();
+		if (e.keyCode === 13 && value) {
+			this.moduleIgnoreList.push(value);
 			e.target.value = '';
 			this.requestUpdate();
 		}
