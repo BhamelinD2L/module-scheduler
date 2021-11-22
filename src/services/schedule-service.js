@@ -40,7 +40,7 @@ export class ScheduleService {
 
 	static async getSemesters() {
 		const semesters = await Requests.getSemesters();
-		return semesters.Items;
+		return semesters;
 	}
 
 	static async runSchedule(scheduleId) {

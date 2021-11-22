@@ -13,6 +13,6 @@ export class Routes {
 	static SaveNewSchedule() { return SCHEDULES_ROUTE; }
 	static Schedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}`; }
 	static SemesterOrgUnitType() { return `${D2L_BASE}/outypes/semester`; }
-	static Semesters(orgUnitTypeId) { return `${D2L_BASE}/orgstructure/?orgUnitType=${orgUnitTypeId}`; }
+	static Semesters() { return `${D2L_BASE}/orgstructure/`; }
 	static UpdateSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/update`; }
 }
