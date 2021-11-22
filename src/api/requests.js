@@ -67,7 +67,22 @@ export class Requests {
 
 	static async getSemesters() {
 		const semesterOrgUnitType = await this._get(Routes.SemesterOrgUnitType());
-		return await this._get(Routes.Semesters(semesterOrgUnitType.Id));
+		let bookmark;
+		let semesters = [];
+		do {
+			const queryParams = {
+				orgUnitType: semesterOrgUnitType.Id,
+				bookmark: (bookmark) ? bookmark : ''
+			};
+			const body  = await this._get(Routes.Semesters(), queryParams);
+			semesters = semesters.concat(body.Items);
+			bookmark = body.PagingInfo.Bookmark;
+			if (!body.PagingInfo.HasMoreItems) {
+				break;
+			}
+		} while (bookmark);
+
+		return semesters;
 	}
 
 	static async postSchedule(schedule) {
