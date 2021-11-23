@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/eslint-parser": "^7",
-    "@brightspace-ui/stylelint-config": "^0.2",
+    "@brightspace-ui/stylelint-config": "^0.3",
     "@brightspace-ui/visual-diff": "^6.0.1",
     "@open-wc/testing": "^3",
     "@open-wc/testing-karma": "^4",
