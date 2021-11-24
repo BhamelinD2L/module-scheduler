@@ -25,8 +25,22 @@ export class ScheduleService {
 		return allSchedules;
 	}
 
-	static async getIgnoreList(scheduleId, search, pageSize, pageNumber) {
-		return await Requests.getIgnoreList(scheduleId, search, pageSize, pageNumber);
+	static async getIgnoreList(
+		scheduleId,
+		search,
+		pageSize,
+		pageNumber,
+		sortableColumn,
+		isAscending
+	) {
+		return await Requests.getIgnoreList(
+			scheduleId,
+			search,
+			pageSize,
+			pageNumber,
+			sortableColumn,
+			isAscending
+		);
 	}
 
 	static async getIgnoreListCount(scheduleId, search) {

@@ -16,6 +16,7 @@ import { heading1Styles } from '@brightspace-ui/core/components/typography/style
 import { LocalizeMixin } from '../mixins/localize-mixin.js';
 import { renderSpinner } from '../helpers/spinner.js';
 import { ScheduleServiceFactory } from '../services/schedule-service-factory.js';
+import { SortableColumn } from '../constants.js';
 import { tableStyles } from '@brightspace-ui/core/components/table/table-wrapper.js';
 
 const ADD_TO_IGNORE_LIST_DIALOG_ID = 'd2l-add-to-ignore-list-dialog';
@@ -110,7 +111,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				attribute: false
 			},
 			_sortField: {
-				type: String,
+				type: Number,
 				attribute: false
 			},
 			_sortIsDesc: {
@@ -206,7 +207,7 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		this._selectedItems = new Set();
 		this._removeSelectedConfirmDialogOpened = false;
 		this._removeAllConfirmDialogOpened = false;
-		this._sortField = 'courseOfferingName';
+		this._sortField = SortableColumn.CourseOfferingName;
 		this._sortIsDesc = false;
 	}
 
@@ -233,7 +234,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				icon="tier3:chevron-left"
 				text=${ this.localize('button:back') }>
 			</d2l-button-subtle>
-			<h2 class="d2l-ignore-list-title">${this.localize('ignoreList:title', { scheduleName: this.scheduleName })}</h2>
+			<h2 class="d2l-ignore-list-title">
+				${this.localize('ignoreList:title', { scheduleName: this.scheduleName })}
+			</h2>
 			<p>${this.localize('page:description')}</p>
 			<div class="d2l-action-bar">
 				${this._renderActionButtons()}
@@ -247,7 +250,9 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		if (
 			changedProperties.has('_pageSize') ||
 			changedProperties.has('_pageNumber') ||
-			changedProperties.has('_searchText')
+			changedProperties.has('_searchText') ||
+			changedProperties.has('_sortField') ||
+			changedProperties.has('_sortIsDesc')
 		) {
 			this._fetchIgnoreList();
 		}
@@ -283,7 +288,14 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			this.ignoreListItems,
 			this._totalIgnoreListItems
 		] = await Promise.all([
-			this.scheduleService.getIgnoreList(this.scheduleId, this._searchText, this._pageSize, this._pageNumber),
+			this.scheduleService.getIgnoreList(
+				this.scheduleId,
+				this._searchText,
+				this._pageSize,
+				this._pageNumber,
+				this._sortField,
+				!this._sortIsDesc
+			),
 			this.scheduleService.getIgnoreListCount(this.scheduleId, this._searchText)
 		]);
 		this._isFetchingIgnoreList = false;
@@ -390,14 +402,14 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	_handleSort(e) {
-		const field = e.target.id;
+		const field = parseInt(e.target.id);
 
 		if (this._sortField === field) {
 			this._sortIsDesc = !this._sortIsDesc;
 		} else {
 			this._sortIsDesc = false;
+			this._sortField = field;
 		}
-		this._sortField = field;
 	}
 
 	async _openAddToIgnoreListDialog() {
@@ -485,8 +497,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 			</td>
 			<td>${item.courseOfferingName}</td>
 			<td>${item.courseOfferingCode}</td>
-			<td>${item.lastDateApplied ? getDateFromISODateTime(item.lastDateApplied).toLocaleString() : ''}</td>
-			<td>${item.lastCompletionStatusId ? completionStatusIdConverter.convertIdToText(item.lastCompletionStatusId) : ''}</td>
+			<td>
+				${item.lastDateApplied ? getDateFromISODateTime(item.lastDateApplied).toLocaleString() : ''}
+			</td>
+			<td>
+				${item.lastCompletionStatusId ? completionStatusIdConverter.convertIdToText(item.lastCompletionStatusId) : ''}
+			</td>
 		</tr>
 	`;
 	}
@@ -518,8 +534,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				?opened=${this._removeAllConfirmDialogOpened}
 				@d2l-dialog-close=${this._handleCloseRemoveAllConfirmDialog}
 			>
-				<d2l-button slot="footer" primary data-dialog-action="yes">${this.localize('ignoreList:removeAllConfirmDialog:confirmButton')}</d2l-button>
-				<d2l-button slot="footer" data-dialog-action>${this.localize('ignoreList:removeAllConfirmDialog:cancelButton')}</d2l-button>
+				<d2l-button slot="footer" primary data-dialog-action="yes">
+					${this.localize('ignoreList:removeAllConfirmDialog:confirmButton')}
+				</d2l-button>
+				<d2l-button slot="footer" data-dialog-action>
+					${this.localize('ignoreList:removeAllConfirmDialog:cancelButton')}
+				</d2l-button>
 			</d2l-dialog-confirm>
 		`;
 	}
@@ -532,8 +552,12 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 				?opened=${this._removeSelectedConfirmDialogOpened}
 				@d2l-dialog-close=${this._handleCloseRemoveSelectedConfirmDialog}
 			>
-				<d2l-button slot="footer" primary data-dialog-action="yes">${this.localize('ignoreList:removeSelectedConfirmDialog:confirmButton')}</d2l-button>
-				<d2l-button slot="footer" data-dialog-action>${this.localize('ignoreList:removeSelectedConfirmDialog:cancelButton')}</d2l-button>
+				<d2l-button slot="footer" primary data-dialog-action="yes">
+					${this.localize('ignoreList:removeSelectedConfirmDialog:confirmButton')}
+				</d2l-button>
+				<d2l-button slot="footer" data-dialog-action>
+					${this.localize('ignoreList:removeSelectedConfirmDialog:cancelButton')}
+				</d2l-button>
 			</d2l-dialog-confirm>
 		`;
 	}
@@ -550,7 +574,6 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 	}
 
 	_renderTable() {
-		this._sort();
 		return html`
 		<d2l-table-wrapper sticky-headers>
 			<table class="d2l-table">
@@ -564,36 +587,36 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 					</th>
 					<th>
 						<d2l-table-col-sort-button
-							id="courseOfferingName"
+							id=${SortableColumn.CourseOfferingName}
 							@click=${this._handleSort}
-							?nosort=${this._sortField !== 'courseOfferingName'}
+							?nosort=${this._sortField !== SortableColumn.CourseOfferingName}
 							?desc=${this._sortIsDesc}>
 						${this.localize('ignoreList:courseOfferingName')}
 						</d2l-table-col-sort-button>
 					</th>
 					<th>
 						<d2l-table-col-sort-button
-							id="courseOfferingCode"
+							id=${SortableColumn.CourseOfferingCode}
 							@click=${this._handleSort}
-							?nosort=${this._sortField !== 'courseOfferingCode'}
+							?nosort=${this._sortField !== SortableColumn.CourseOfferingCode}
 							?desc=${this._sortIsDesc}>
 						${this.localize('ignoreList:courseOfferingCode')}
 						</d2l-table-col-sort-button>
 					</th>
 					<th>
 						<d2l-table-col-sort-button
-							id="lastDateApplied"
+							id=${SortableColumn.LastDateApplied}
 							@click=${this._handleSort}
-							?nosort=${this._sortField !== 'lastDateApplied'}
+							?nosort=${this._sortField !== SortableColumn.LastDateApplied}
 							?desc=${this._sortIsDesc}>
 						${this.localize('tableHeader:lastDateApplied')}
 						</d2l-table-col-sort-button>
 					</th>
 					<th>
 						<d2l-table-col-sort-button
-							id="completionStatus"
+							id=${SortableColumn.CompletionStatusName}
 							@click=${this._handleSort}
-							?nosort=${this._sortField !== 'completionStatus'}
+							?nosort=${this._sortField !== SortableColumn.CompletionStatusName}
 							?desc=${this._sortIsDesc}>
 						${this.localize('ignoreList:completionStatus')}
 						</d2l-table-col-sort-button>
@@ -612,26 +635,6 @@ class ModuleSchedulerIgnoreList extends BaseMixin(LocalizeMixin(LitElement)) {
 		return html`
 			${ this.ignoreListItems.map(item => this._renderIgnoreListItem(item)) }
 		`;
-	}
-
-	_sort() {
-		if (this._sortField === 'completionStatus') {
-			return this.ignoreListItems.sort((a, b) => {
-				a = completionStatusIdConverter.convertIdToText(a.lastCompletionStatusId);
-				b = completionStatusIdConverter.convertIdToText(b.lastCompletionStatusId);
-				if (this._sortIsDesc) {
-					return b.localeCompare(a);
-				}
-				return a.localeCompare(b);
-			});
-		}
-
-		return this.ignoreListItems.sort((a, b) => {
-			if (this._sortIsDesc) {
-				return b[this._sortField].localeCompare(a[this._sortField]);
-			}
-			return a[this._sortField].localeCompare(b[this._sortField]);
-		});
 	}
 
 }

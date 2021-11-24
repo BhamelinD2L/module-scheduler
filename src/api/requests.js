@@ -45,11 +45,19 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
-	static async getIgnoreList(scheduleId, search, pageSize, pageNumber) {
+	static async getIgnoreList(
+		scheduleId,
+		search, pageSize,
+		pageNumber,
+		sortableColumn,
+		isAscending
+	) {
 		const queryParams = {
 			search: search ? search : undefined,
 			pageSize,
-			pageNumber
+			pageNumber,
+			sortableColumn,
+			isAscending
 		};
 
 		return await this._get(Routes.IgnoreList(scheduleId), queryParams);
