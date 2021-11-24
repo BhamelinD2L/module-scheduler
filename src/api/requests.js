@@ -45,6 +45,10 @@ export class Requests {
 		return await this._get(Routes.AllSchedules());
 	}
 
+	static async getCourseOfferingCounts(scheduleId) {
+		return await this._get(Routes.CourseOfferingCounts(scheduleId));
+	}
+
 	static async getIgnoreList(
 		scheduleId,
 		search, pageSize,

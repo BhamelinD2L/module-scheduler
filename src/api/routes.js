@@ -4,6 +4,7 @@ const D2L_BASE = `/d2l/api/lp/${API_VERSION}`;
 
 export class Routes {
 	static AllSchedules() { return `${SCHEDULES_ROUTE}/`; }
+	static CourseOfferingCounts(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/courseofferings/count`; }
 	static DeleteSchedule(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/delete`; }
 	static IgnoreList(scheduleId) { return `${SCHEDULES_ROUTE}/${scheduleId}/ignorelist`; }
 	static IgnoreListAdd(scheduleId, courseOfferingId) { return `${SCHEDULES_ROUTE}/${scheduleId}/ignorelist/${courseOfferingId}`; }

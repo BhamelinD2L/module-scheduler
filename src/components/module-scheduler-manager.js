@@ -40,6 +40,9 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 			},
 			_scheduleId: {
 				type: String
+			},
+			_courseOfferingCounts: {
+				type: Array
 			}
 		};
 	}
@@ -81,6 +84,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.openApplyNowDialog = false;
 		this.openDeleteDialog = false;
 		this._scheduleId = null;
+		this._courseOfferingCounts = null;
 	}
 
 	async connectedCallback() {
@@ -152,9 +156,12 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		this.openApplyNowDialog = false;
 	}
 
-	_handleWarningDialogOpen(event) {
-		this.openApplyNowDialog = true;
+	async _handleWarningDialogOpen(event) {
 		this._scheduleId = event.target.getAttribute('schedule-id');
+
+		this._courseOfferingCounts = await this.scheduleService.getCourseOfferingCounts(this._scheduleId);
+
+		this.openApplyNowDialog = true;
 	}
 
 	async _loadSchedules() {
@@ -276,12 +283,16 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 					</tbody>
 				</table>
 
-			${this._renderWarningDialog()}
+			${this.openApplyNowDialog ? this._renderWarningDialog() : ''}
 			${this._renderDeleteWarningDialog()}
 		`;
 	}
 
 	_renderWarningDialog() {
+		const targetCourseOfferingsCount = this._courseOfferingCounts.targetCourseOfferings;
+		const courseOfferingsWithStartDateCount = this._courseOfferingCounts.courseOfferingsWithPastStartDate;
+		const scheduleName = this.allSchedules.find(schedule => schedule.scheduleId === this._scheduleId).courseOfferingSemesterName;
+
 		return html`
 			<d2l-dialog
 		        title-text="${this.localize('warningDialog:title')}"
@@ -289,7 +300,8 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				@d2l-dialog-close=${this._handleWarningDialogClose}
 			>
 				<div>
-					<p>${this.localize('warningDialog:content')}<p>
+					<p>${this.localize('warningDialog:content', { targetCourseOfferingsCount: targetCourseOfferingsCount, semesterName: scheduleName })}<p>
+					${courseOfferingsWithStartDateCount !== 0 ? this._renderWarningMessage(courseOfferingsWithStartDateCount) : ''}
 				</div>
 				<d2l-button slot="footer" primary @click=${this._handleApplyNow}>
 					${this.localize('button:yes')}
@@ -301,6 +313,11 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 		`;
 	}
 
+	_renderWarningMessage(courseOfferingsWithPastStartDate) {
+		return html`
+			<p>${this.localize('warningDialog:content:warning', { courseOfferingsWithPastStartDateCount: courseOfferingsWithPastStartDate })}<p>
+		`;
+	}
 }
 customElements.define('module-scheduler-manager', ModuleSchedulerManager);
 

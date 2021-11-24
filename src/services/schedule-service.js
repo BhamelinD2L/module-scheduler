@@ -25,6 +25,10 @@ export class ScheduleService {
 		return allSchedules;
 	}
 
+	static async getCourseOfferingCounts(scheduleId) {
+		return await Requests.getCourseOfferingCounts(scheduleId);
+	}
+
 	static async getIgnoreList(
 		scheduleId,
 		search,
@@ -65,5 +69,4 @@ export class ScheduleService {
 		await Requests.putSchedule(scheduleId, schedule);
 		return;
 	}
-
 }

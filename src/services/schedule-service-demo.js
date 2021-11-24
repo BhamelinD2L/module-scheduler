@@ -89,6 +89,14 @@ export class ScheduleServiceDemo {
 		return this.schedules;
 	}
 
+	static async getCourseOfferingCounts() {
+		const counts = {
+			'targetCourseOfferings': 5,
+			'courseOfferingsWithPastStartDate': 5
+		};
+		return counts;
+	}
+
 	static async getIgnoreList() {
 		return this.ignoreListItems;
 	}
@@ -108,5 +116,5 @@ export class ScheduleServiceDemo {
 
 	static async runSchedule() {}
 
-	static async updateSchedule() {}
+	static async updateSchedule() { }
 }
