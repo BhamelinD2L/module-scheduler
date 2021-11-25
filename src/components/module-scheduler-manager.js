@@ -8,6 +8,7 @@ import './module-scheduler-schedule-dialog.js';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { AppRoutes } from '../helpers/app-routes.js';
 import { BaseMixin } from '../mixins/base-mixin.js';
+import completionStatusIdConverter from '../helpers/completion-status-codes.js';
 import { getDateFromISODateTime } from '@brightspace-ui/core/helpers/dateTime.js';
 import { heading1Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { ifDefined } from 'lit-html/directives/if-defined';
@@ -256,6 +257,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 				<td>${schedule.courseOfferingSubjectCodeFilter.join(', ')}</td>
 				<td>${schedule.courseOfferingSessionCodeFilter}</td>
 				<td>${lastDateApplied}</td>
+				<td>${schedule.completionStatusId ? completionStatusIdConverter.convertIdToText(schedule.completionStatusId) : ''}</td>
 			</tr>
 		`;
 	}
@@ -270,6 +272,7 @@ class ModuleSchedulerManager extends BaseMixin(LocalizeMixin(LitElement)) {
 						<th>${this.localize('tableHeader:subject')}</th>
 						<th>${this.localize('tableHeader:session')}</th>
 						<th>${this.localize('tableHeader:lastDateApplied')}</th>
+						<th>${this.localize('tableHeader:status')}</th>
 					</thead>
 					<tbody>
 						${ this.isQuerying ? '' : this.allSchedules.map(schedule => this._renderSchedule(schedule)) }

@@ -9,6 +9,7 @@ export default {
 	"tableHeader:session": "Catalog & Section",
 	"tableHeader:subject": "Subject",
 	"tableHeader:lastDateApplied": "Last Date Applied",
+	"tableHeader:status": "Status",
 	"contextMenu:label": "Menu",
 	"contextMenu:edit": "Edit",
 	"contextMenu:viewIgnoreList": "View Ignore List",
