@@ -23,7 +23,8 @@ export class ScheduleServiceDemo {
 			scheduleJson: '',
 			createdByUserId: 1,
 			createdDate: '2021-06-01T19:57:39.290Z',
-			lastRunDate: '2021-07-01T19:57:39.290Z'
+			lastRunDate: '2021-07-01T19:57:39.290Z',
+			completionStatusId: '2'
 		},
 		{
 			scheduleId: '2',
